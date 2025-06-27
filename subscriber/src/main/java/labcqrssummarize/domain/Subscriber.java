@@ -1,17 +1,9 @@
 package labcqrssummarize.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.SubscriberApplication;
-import labcqrssummarize.domain.MembershipRequested;
-import labcqrssummarize.domain.SignedUp;
-import labcqrssummarize.domain.SubscribeCanceled;
-import labcqrssummarize.domain.SubscribeRequested;
 import lombok.Data;
 
 @Entity
@@ -27,20 +19,24 @@ public class Subscriber {
 
     private String subscriptionType;
 
-    private Date startedAt;
+    private LocalDateTime startedAt;
 
-    private Date expiredAt;
+    private LocalDateTime expiredAt;
 
-    private ViewHistory viewHistory;
+    // 전자책 열람 기록 - 일대다 관계로 가정
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "subscriber_id")
+    private List<ViewHistory> viewHistory;
 
-    private membershipType membershipType;
+    @Enumerated(EnumType.STRING)
+    private MembershipType membershipType;
 
-    private subscriptionStatus subscriptionStatus;
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus subscriptionStatus;
 
     private String password;
 
-    @Embedded
-    private Email email;
+    private String email;  // Email 별도 클래스 없이 String 타입으로 사용
 
     @PostPersist
     public void onPostPersist() {
@@ -66,26 +62,7 @@ public class Subscriber {
 
     //<<< Clean Arch / Port Method
     public static void recommandKtMembership(SignedUp signedUp) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        Subscriber subscriber = new Subscriber();
-        repository().save(subscriber);
-
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(signedUp.get???()).ifPresent(subscriber->{
-            
-            subscriber // do something
-            repository().save(subscriber);
-
-
-         });
-        */
-
+        // business logic here
     }
     //>>> Clean Arch / Port Method
 

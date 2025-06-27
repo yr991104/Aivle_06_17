@@ -5,7 +5,6 @@ import java.util.*;
 import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
 import lombok.*;
-
 //<<< DDD / Domain Event
 @Data
 @ToString

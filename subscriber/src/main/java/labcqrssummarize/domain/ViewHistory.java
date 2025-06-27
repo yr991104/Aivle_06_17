@@ -1,11 +1,8 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import lombok.Data;
-import org.springframework.beans.BeanUtils;
 
 @Entity
 @Data
@@ -19,21 +16,21 @@ public class ViewHistory {
 
     private String ebookId;
 
-    private String viewedAt;
+    private LocalDateTime viewedAt;
 
-    private String usedPoint;
+    private Integer usedPoint;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "subscriber_id")
     private Subscriber subscriber;
 
-    protected ViewHistory() {}
+    public ViewHistory() {}
 
-    protected ViewHistory(
+    public ViewHistory(
         String historyId,
         String ebookId,
-        String viewedAt,
-        String usedPoint,
+        LocalDateTime viewedAt,
+        Integer usedPoint,
         Subscriber subscriber
     ) {
         this.historyId = historyId;
@@ -41,21 +38,5 @@ public class ViewHistory {
         this.viewedAt = viewedAt;
         this.usedPoint = usedPoint;
         this.subscriber = subscriber;
-    }
-
-    public String getHistoryId() {
-        return historyId;
-    }
-
-    public String getEbookId() {
-        return ebookId;
-    }
-
-    public String getViewedAt() {
-        return viewedAt;
-    }
-
-    public String getUsedPoint() {
-        return usedPoint;
     }
 }

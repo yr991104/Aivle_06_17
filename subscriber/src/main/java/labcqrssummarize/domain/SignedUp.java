@@ -1,31 +1,37 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDate;
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
-//<<< DDD / Domain Event
+import java.util.Collections;
+import java.util.List;
+
 @Data
 @ToString
 public class SignedUp extends AbstractEvent {
 
-    private String userId;
-    private String subscriptionType;
-    private ViewHistory viewHistory;
-    private membershipType membershipType;
-    private subscriptionStatus subscriptionStatus;
-    private String password;
-    private Email email;
     private String subscriberId;
+    private String userId;
+    private String password;
+    private String email;
+    private String subscriptionType;  
+    private MembershipType membershipType;
+    private SubscriptionStatus subscriptionStatus;
 
     public SignedUp(Subscriber aggregate) {
         super(aggregate);
+        this.subscriberId = aggregate.getSubscriberId();  
+        this.userId = aggregate.getUserId();
+        this.password = aggregate.getPassword();
+        this.email = aggregate.getEmail();
+        this.subscriptionType = null;  
+        this.membershipType = MembershipType.NEW_MEMBER;  
+        this.subscriptionStatus = SubscriptionStatus.SUBSCRIBED;  
     }
 
     public SignedUp() {
         super();
     }
 }
-//>>> DDD / Domain Event
+
