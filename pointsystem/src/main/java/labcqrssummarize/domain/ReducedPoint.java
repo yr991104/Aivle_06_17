@@ -9,6 +9,7 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
+//포인트 차감
 public class ReducedPoint extends AbstractEvent {
 
     private String userId;
