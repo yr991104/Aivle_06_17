@@ -1,25 +1,26 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDate;
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
-import lombok.*;
-//<<< DDD / Domain Event
+import lombok.Data;
+import lombok.ToString;
+
 @Data
 @ToString
 public class MembershipRequested extends AbstractEvent {
 
     private String userId;
-    private membershipType membershipType;
-    private Email email;
+    private MembershipType membershipType;
+    private String email;
 
     public MembershipRequested(Subscriber aggregate) {
         super(aggregate);
+        this.userId = aggregate.getUserId();
+        this.membershipType = aggregate.getMembershipType();
+        this.email = aggregate.getEmail();
     }
 
     public MembershipRequested() {
         super();
     }
 }
-//>>> DDD / Domain Event
+
