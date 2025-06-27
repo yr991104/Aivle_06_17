@@ -11,7 +11,10 @@ import lombok.*;
 @ToString
 public class RequestContentApporved extends AbstractEvent {
 
-    private Long id;
+    private String ebookId;
+    private String title;
+    private String content;
+    private publicationStatus publicationStatus;
 
     public RequestContentApporved(EBook aggregate) {
         super(aggregate);

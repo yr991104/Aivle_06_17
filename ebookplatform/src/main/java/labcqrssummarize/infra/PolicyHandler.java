@@ -25,15 +25,15 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='GenerateBookCover'"
+        condition = "headers['type']=='GeneratedEBookCover'"
     )
-    public void wheneverGenerateBookCover_CheckEbookStatus(
-        @Payload GenerateBookCover generateBookCover
+    public void wheneverGeneratedEBookCover_CheckEBookStatus(
+        @Payload GeneratedEBookCover generatedEBookCover
     ) {
-        GenerateBookCover event = generateBookCover;
+        GeneratedEBookCover event = generatedEBookCover;
         System.out.println(
-            "\n\n##### listener CheckEbookStatus : " +
-            generateBookCover +
+            "\n\n##### listener CheckEBookStatus : " +
+            generatedEBookCover +
             "\n\n"
         );
         // Comments //
@@ -45,14 +45,16 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='SummarizeContent'"
+        condition = "headers['type']=='SummarizedContent'"
     )
-    public void wheneverSummarizeContent_CheckEbookStatus(
-        @Payload SummarizeContent summarizeContent
+    public void wheneverSummarizedContent_CheckEBookStatus(
+        @Payload SummarizedContent summarizedContent
     ) {
-        SummarizeContent event = summarizeContent;
+        SummarizedContent event = summarizedContent;
         System.out.println(
-            "\n\n##### listener CheckEbookStatus : " + summarizeContent + "\n\n"
+            "\n\n##### listener CheckEBookStatus : " +
+            summarizedContent +
+            "\n\n"
         );
         // Comments //
         //AI 표지 생성과 전자책 요약이 모두 된 상태인지 체크
@@ -63,21 +65,22 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='RequestListOutEbook'"
+        condition = "headers['type']=='EstimatiedPriceAndCategory'"
     )
-    public void wheneverRequestListOutEbook_ListOutEbook(
-        @Payload RequestListOutEbook requestListOutEbook
+    public void wheneverEstimatiedPriceAndCategory_CheckEBookStatus(
+        @Payload EstimatiedPriceAndCategory estimatiedPriceAndCategory
     ) {
-        RequestListOutEbook event = requestListOutEbook;
+        EstimatiedPriceAndCategory event = estimatiedPriceAndCategory;
         System.out.println(
-            "\n\n##### listener ListOutEbook : " + requestListOutEbook + "\n\n"
+            "\n\n##### listener CheckEBookStatus : " +
+            estimatiedPriceAndCategory +
+            "\n\n"
         );
-
         // Comments //
-        //화면에서 전자책 안보이게함
+        //AI 표지 생성과 전자책 요약이 모두 된 상태인지 체크
 
         // Sample Logic //
-        EBookPlatform.listOutEbook(event);
+
     }
 }
 //>>> Clean Arch / Inbound Adaptor

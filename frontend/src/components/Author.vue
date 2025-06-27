@@ -15,12 +15,15 @@
             v-model="value.isApproved"
             :editMode="editMode"
         />
-        <Books
-            offline
-            label="EBook"
-            v-model="value.eBook"
+        <String
+            label="Ebooks"
+            v-model="value.ebooks"
             :editMode="editMode"
-            @change="change"
+        />
+        <String
+            label="UserId"
+            v-model="value.userId"
+            :editMode="editMode"
         />
         <v-row class="ma-0 pa-0">
             <v-spacer></v-spacer>

@@ -28,10 +28,12 @@
                         <th>Id</th>
                         <th>Title</th>
                         <th>AuthorId</th>
-                        <th>ContentId</th>
+                        <th>Content</th>
                         <th>CoverImage</th>
                         <th>Summary</th>
-                        <th>IsPublicationApproved</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>CountViews</th>
                         <th>PublicationStatus</th>
                         </tr>
                     </thead>
@@ -44,10 +46,12 @@
                             <td class="font-semibold">{{ idx + 1 }}</td>
                             <td class="whitespace-nowrap" label="Title">{{ val.title }}</td>
                             <td class="whitespace-nowrap" label="AuthorId">{{ val.authorId }}</td>
-                            <td class="whitespace-nowrap" label="ContentId">{{ val.contentId }}</td>
+                            <td class="whitespace-nowrap" label="Content">{{ val.content }}</td>
                             <td class="whitespace-nowrap" label="CoverImage">{{ val.coverImage }}</td>
                             <td class="whitespace-nowrap" label="Summary">{{ val.summary }}</td>
-                            <td class="whitespace-nowrap" label="IsPublicationApproved">{{ val.isPublicationApproved }}</td>
+                            <td class="whitespace-nowrap" label="Price">{{ val.price }}</td>
+                            <td class="whitespace-nowrap" label="Category">{{ val.category }}</td>
+                            <td class="whitespace-nowrap" label="CountViews">{{ val.countViews }}</td>
                             <td class="whitespace-nowrap" label="PublicationStatus">{{ val.publicationStatus }}</td>
                             <v-row class="ma-0 pa-4 align-center">
                                 <v-spacer></v-spacer>
@@ -113,11 +117,13 @@
                             <String label="EbookId" v-model="selectedRow.ebookId" :editMode="true"/>
                             <String label="Title" v-model="selectedRow.title" :editMode="true"/>
                             <String label="AuthorId" v-model="selectedRow.authorId" :editMode="true"/>
-                            <String label="ContentId" v-model="selectedRow.contentId" :editMode="true"/>
+                            <String label="Content" v-model="selectedRow.content" :editMode="true"/>
                             <String label="CoverImage" v-model="selectedRow.coverImage" :editMode="true"/>
                             <String label="Summary" v-model="selectedRow.summary" :editMode="true"/>
-                            <Boolean label="IsPublicationApproved" v-model="selectedRow.isPublicationApproved" :editMode="true"/>
-                            <String label="PublicationStatus" v-model="selectedRow.publicationStatus" :editMode="true"/>
+                            <Number label="Price" v-model="selectedRow.price" :editMode="true"/>
+                            <String label="Category" v-model="selectedRow.category" :editMode="true"/>
+                            <Number label="CountViews" v-model="selectedRow.countViews" :editMode="true"/>
+                            <publicationStatus offline label="PublicationStatus" v-model="selectedRow.publicationStatus" :editMode="true"/>
                             <v-divider class="border-opacity-100 my-divider"></v-divider>
                             <v-layout row justify-end>
                                 <v-btn

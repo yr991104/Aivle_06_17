@@ -18,25 +18,28 @@ import labcqrssummarize.domain.*;
 @Service
 @Transactional
 public class PolicyHandler{
+    @Autowired EBookRepository eBookRepository;
     
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString){}
 
-    @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='RequestPublicationApproved'")
-    public void wheneverRequestPublicationApproved_RequestBookCover(@Payload RequestPublicationApproved requestPublicationApproved){
+    @StreamListener(value=KafkaProcessor.INPUT, condition="headers['type']=='RequestPublishApproved'")
+    public void wheneverRequestPublishApproved_GenerateContentWithAi(@Payload RequestPublishApproved requestPublishApproved){
 
-        RequestPublicationApproved event = requestPublicationApproved;
-        System.out.println("\n\n##### listener RequestBookCover : " + requestPublicationApproved + "\n\n");
+        RequestPublishApproved event = requestPublishApproved;
+        System.out.println("\n\n##### listener GenerateContentWithAi : " + requestPublishApproved + "\n\n");
 
 
         
 
         // Sample Logic //
 
-        GenerateBookCoverCommand command = new GenerateBookCoverCommand();
-        .generateBookCover(command);
+        GenerateEBookCoverCommand command = new GenerateEBookCoverCommand();
+        EBook.generateEBookCover(command);
         SummarizeContentCommand command = new SummarizeContentCommand();
         .summarizeContent(command);
+        EstimatePriceAndCategoryCommand command = new EstimatePriceAndCategoryCommand();
+        .estimatePriceAndCategory(command);
 
         
 

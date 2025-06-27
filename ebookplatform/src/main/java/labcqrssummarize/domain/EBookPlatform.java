@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.EbookplatformApplication;
-import labcqrssummarize.domain.ListOutEbook;
-import labcqrssummarize.domain.ListUpEbook;
+import labcqrssummarize.domain.ListOutEBook;
+import labcqrssummarize.domain.ListedUpEBook;
 import lombok.Data;
 
 @Entity
@@ -19,28 +19,21 @@ import lombok.Data;
 public class EBookPlatform {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Integer pid;
 
-    private String ebookId;
-
-    private String authorId;
-
-    private String contentId;
+    private String ebooks;
 
     private String aiGeneratedCover;
-
-    private String ebookStatus;
 
     private Date registeredAt;
 
     @PostPersist
     public void onPostPersist() {
-        ListUpEbook listUpEbook = new ListUpEbook(this);
-        listUpEbook.publishAfterCommit();
+        ListedUpEBook listedUpEBook = new ListedUpEBook(this);
+        listedUpEBook.publishAfterCommit();
 
-        ListOutEbook listOutEbook = new ListOutEbook(this);
-        listOutEbook.publishAfterCommit();
+        ListOutEBook listOutEBook = new ListOutEBook(this);
+        listOutEBook.publishAfterCommit();
     }
 
     public static EBookPlatformRepository repository() {
@@ -49,31 +42,5 @@ public class EBookPlatform {
         );
         return eBookPlatformRepository;
     }
-
-    //<<< Clean Arch / Port Method
-    public static void listOutEbook(RequestListOutEbook requestListOutEbook) {
-        //implement business logic here:
-
-        /** Example 1:  new item 
-        EBookPlatform eBookPlatform = new EBookPlatform();
-        repository().save(eBookPlatform);
-
-        */
-
-        /** Example 2:  finding and process
-        
-
-        repository().findById(requestListOutEbook.get???()).ifPresent(eBookPlatform->{
-            
-            eBookPlatform // do something
-            repository().save(eBookPlatform);
-
-
-         });
-        */
-
-    }
-    //>>> Clean Arch / Port Method
-
 }
 //>>> DDD / Aggregate Root

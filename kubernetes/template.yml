@@ -198,6 +198,46 @@ spec:
             periodSeconds: 5
             failureThreshold: 5
 
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pointsystem
+  labels:
+    app: pointsystem
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pointsystem
+  template:
+    metadata:
+      labels:
+        app: pointsystem
+    spec:
+      containers:
+        - name: pointsystem
+          image: username/pointsystem:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 10
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 10
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 120
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+
 
 ---
 
@@ -282,4 +322,21 @@ spec:
       targetPort: 8080
   selector:
     app: aisystem
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pointsystem
+  labels:
+    app: pointsystem
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: pointsystem
 

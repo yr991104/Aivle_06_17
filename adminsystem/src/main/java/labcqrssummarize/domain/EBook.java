@@ -9,9 +9,8 @@ import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.AdminsystemApplication;
 import labcqrssummarize.domain.RequestContentApporved;
-import labcqrssummarize.domain.RequestContentDenied;
-import labcqrssummarize.domain.RequestPublicationApproved;
-import labcqrssummarize.domain.RequestPublicationDenied;
+import labcqrssummarize.domain.RequestPublishApproved;
+import labcqrssummarize.domain.RequestPublishDenied;
 import lombok.Data;
 
 @Entity
@@ -27,15 +26,19 @@ public class EBook {
 
     private String authorId;
 
-    private String contentId;
+    private String content;
 
     private String coverImage;
 
     private String summary;
 
-    private Boolean isPublicationApproved;
+    private Integer price;
 
-    private String publicationStatus;
+    private String category;
+
+    private Integer countViews;
+
+    private publicationStatus publicationStatus;
 
     @PostPersist
     public void onPostPersist() {
@@ -44,20 +47,15 @@ public class EBook {
         );
         requestContentApporved.publishAfterCommit();
 
-        RequestContentDenied requestContentDenied = new RequestContentDenied(
+        RequestPublishApproved requestPublishApproved = new RequestPublishApproved(
             this
         );
-        requestContentDenied.publishAfterCommit();
+        requestPublishApproved.publishAfterCommit();
 
-        RequestPublicationApproved requestPublicationApproved = new RequestPublicationApproved(
+        RequestPublishDenied requestPublishDenied = new RequestPublishDenied(
             this
         );
-        requestPublicationApproved.publishAfterCommit();
-
-        RequestPublicationDenied requestPublicationDenied = new RequestPublicationDenied(
-            this
-        );
-        requestPublicationDenied.publishAfterCommit();
+        requestPublishDenied.publishAfterCommit();
     }
 
     public static EBookRepository repository() {

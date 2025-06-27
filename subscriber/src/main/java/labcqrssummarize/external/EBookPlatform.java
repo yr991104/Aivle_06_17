@@ -6,11 +6,8 @@ import lombok.Data;
 @Data
 public class EBookPlatform {
 
-    private Long id;
-    private String ebookId;
-    private String authorId;
-    private String contentId;
+    private Integer pid;
+    private String ebooks;
     private String aiGeneratedCover;
-    private String ebookStatus;
     private Date registeredAt;
 }

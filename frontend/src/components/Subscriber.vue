@@ -11,11 +11,6 @@
             :editMode="editMode"
         />
         <String
-            label="SubscriptionStatus"
-            v-model="value.subscriptionStatus"
-            :editMode="editMode"
-        />
-        <String
             label="SubscriptionType"
             v-model="value.subscriptionType"
             :editMode="editMode"
@@ -30,6 +25,11 @@
             v-model="value.expiredAt"
             :editMode="editMode"
         />
+        <String
+            label="Password"
+            v-model="value.password"
+            :editMode="editMode"
+        />
         <ViewHistory
             offline
             label="viewHistory"
@@ -37,10 +37,24 @@
             :editMode="editMode"
             @change="change"
         />
-        <Number
+        <membershipType
             offline
-            label="pointHistory"
-            v-model="value.pointHistory"
+            label="MembershipType"
+            v-model="value.membershipType"
+            :editMode="editMode"
+            @change="change"
+        />
+        <subscriptionStatus
+            offline
+            label="SubscriptionStatus"
+            v-model="value.subscriptionStatus"
+            :editMode="editMode"
+            @change="change"
+        />
+        <Email
+            offline
+            label="Email"
+            v-model="value.email"
             :editMode="editMode"
             @change="change"
         />

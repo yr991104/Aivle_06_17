@@ -25,11 +25,8 @@
                     <thead>
                         <tr>
                         <th>Id</th>
-                        <th>EbookId</th>
-                        <th>AuthorId</th>
-                        <th>ContentId</th>
+                        <th>Ebooks</th>
                         <th>AiGeneratedCover</th>
-                        <th>EbookStatus</th>
                         <th>RegisteredAt</th>
                         </tr>
                     </thead>
@@ -40,11 +37,8 @@
                             :style="val === selectedRow ? 'background-color: rgb(var(--v-theme-primary), 0.2) !important;':''"
                         >
                             <td class="font-semibold">{{ idx + 1 }}</td>
-                            <td class="whitespace-nowrap" label="EbookId">{{ val.ebookId }}</td>
-                            <td class="whitespace-nowrap" label="AuthorId">{{ val.authorId }}</td>
-                            <td class="whitespace-nowrap" label="ContentId">{{ val.contentId }}</td>
+                            <td class="whitespace-nowrap" label="Ebooks">{{ val.ebooks }}</td>
                             <td class="whitespace-nowrap" label="AiGeneratedCover">{{ val.aiGeneratedCover }}</td>
-                            <td class="whitespace-nowrap" label="EbookStatus">{{ val.ebookStatus }}</td>
                             <td class="whitespace-nowrap" label="RegisteredAt">{{ val.registeredAt }}</td>
                             <v-row class="ma-0 pa-4 align-center">
                                 <v-spacer></v-spacer>
@@ -107,11 +101,9 @@
                     </v-toolbar>
                     <v-card-text>
                         <div>
-                            <String label="EbookId" v-model="selectedRow.ebookId" :editMode="true"/>
-                            <String label="AuthorId" v-model="selectedRow.authorId" :editMode="true"/>
-                            <String label="ContentId" v-model="selectedRow.contentId" :editMode="true"/>
+                            <Number label="Pid" v-model="selectedRow.pid" :editMode="true"/>
+                            <String label="Ebooks" v-model="selectedRow.ebooks" :editMode="true"/>
                             <String label="AiGeneratedCover" v-model="selectedRow.aiGeneratedCover" :editMode="true"/>
-                            <String label="EbookStatus" v-model="selectedRow.ebookStatus" :editMode="true"/>
                             <Date label="RegisteredAt" v-model="selectedRow.registeredAt" :editMode="true"/>
                             <v-divider class="border-opacity-100 my-divider"></v-divider>
                             <v-layout row justify-end>

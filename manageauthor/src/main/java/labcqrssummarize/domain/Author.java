@@ -8,9 +8,11 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.ManageauthorApplication;
-import labcqrssummarize.domain.ContentWritten;
+import labcqrssummarize.domain.ListOutEbookRequested;
 import labcqrssummarize.domain.RegisteredAuthor;
-import labcqrssummarize.domain.RequestListOutEbook;
+import labcqrssummarize.domain.RequestPublish;
+import labcqrssummarize.domain.RequestPublishCanceled;
+import labcqrssummarize.domain.WrittenContent;
 import lombok.Data;
 
 @Entity
@@ -26,18 +28,33 @@ public class Author {
 
     private Boolean isApproved;
 
-    private Books eBook;
+    private String ebooks;
+
+    private String userId;
 
     @PostPersist
     public void onPostPersist() {
         RegisteredAuthor registeredAuthor = new RegisteredAuthor(this);
         registeredAuthor.publishAfterCommit();
 
-        ContentWritten contentWritten = new ContentWritten(this);
-        contentWritten.publishAfterCommit();
+        WrittenContent writtenContent = new WrittenContent(this);
+        writtenContent.publishAfterCommit();
 
-        RequestListOutEbook requestListOutEbook = new RequestListOutEbook(this);
-        requestListOutEbook.publishAfterCommit();
+        RequestPublish requestPublish = new RequestPublish(this);
+        requestPublish.publishAfterCommit();
+
+        RequestPublishCanceled requestPublishCanceled = new RequestPublishCanceled(
+            this
+        );
+        requestPublishCanceled.publishAfterCommit();
+    }
+
+    @PreUpdate
+    public void onPreUpdate() {
+        ListOutEbookRequested listOutEbookRequested = new ListOutEbookRequested(
+            this
+        );
+        listOutEbookRequested.publishAfterCommit();
     }
 
     public static AuthorRepository repository() {

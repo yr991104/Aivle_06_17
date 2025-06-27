@@ -19,21 +19,22 @@
                     <v-icon small>mdi-pencil</v-icon>수정
                 </v-btn>
             </div>
-            <LookMyInfo @search="search" style="margin-bottom: 10px; background-color: #ffffff;"></LookMyInfo>
+            <LookUpMyInfo @search="search" style="margin-bottom: 10px; background-color: #ffffff;"></LookUpMyInfo>
             <div class="mb-5 text-lg font-bold"></div>
             <div class="table-responsive">
                 <v-table>
                     <thead>
                         <tr>
                         <th>Id</th>
-                        <th>SubscriberId</th>
                         <th>UserId</th>
-                        <th>SubscriptionStatus</th>
                         <th>SubscriptionType</th>
                         <th>StartedAt</th>
                         <th>ExpiredAt</th>
                         <th>viewHistory</th>
-                        <th>pointHistory</th>
+                        <th>MembershipType</th>
+                        <th>SubscriptionStatus</th>
+                        <th>Password</th>
+                        <th>Email</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -43,14 +44,17 @@
                             :style="val === selectedRow ? 'background-color: rgb(var(--v-theme-primary), 0.2) !important;':''"
                         >
                             <td class="font-semibold">{{ idx + 1 }}</td>
-                            <td class="whitespace-nowrap" label="SubscriberId">{{ val.subscriberId }}</td>
                             <td class="whitespace-nowrap" label="UserId">{{ val.userId }}</td>
-                            <td class="whitespace-nowrap" label="SubscriptionStatus">{{ val.subscriptionStatus }}</td>
                             <td class="whitespace-nowrap" label="SubscriptionType">{{ val.subscriptionType }}</td>
                             <td class="whitespace-nowrap" label="StartedAt">{{ val.startedAt }}</td>
                             <td class="whitespace-nowrap" label="ExpiredAt">{{ val.expiredAt }}</td>
                             <td class="whitespace-nowrap" label="viewHistory">{{ val.viewHistory }}</td>
-                            <td class="whitespace-nowrap" label="pointHistory">{{ val.pointHistory }}</td>
+                            <td class="whitespace-nowrap" label="MembershipType">{{ val.membershipType }}</td>
+                            <td class="whitespace-nowrap" label="SubscriptionStatus">{{ val.subscriptionStatus }}</td>
+                            <td class="whitespace-nowrap" label="Password">{{ val.password }}</td>
+                            <td class="whitespace-nowrap" label="Email">
+                                <Email :editMode="false" :inList="true" v-model="val.email"></Email>
+                            </td>
                             <v-row class="ma-0 pa-4 align-center">
                                 <v-spacer></v-spacer>
                                 <Icon style="cursor: pointer;" icon="mi:delete" @click="deleteRow(val)" />
@@ -114,12 +118,14 @@
                         <div>
                             <String label="SubscriberId" v-model="selectedRow.subscriberId" :editMode="true"/>
                             <String label="UserId" v-model="selectedRow.userId" :editMode="true"/>
-                            <String label="SubscriptionStatus" v-model="selectedRow.subscriptionStatus" :editMode="true"/>
                             <String label="SubscriptionType" v-model="selectedRow.subscriptionType" :editMode="true"/>
                             <Date label="StartedAt" v-model="selectedRow.startedAt" :editMode="true"/>
                             <Date label="ExpiredAt" v-model="selectedRow.expiredAt" :editMode="true"/>
+                            <String label="Password" v-model="selectedRow.password" :editMode="true"/>
                             <ViewHistory offline label="viewHistory" v-model="selectedRow.viewHistory" :editMode="true"/>
-                            <PointHistory offline label="pointHistory" v-model="selectedRow.pointHistory" :editMode="true"/>
+                            <membershipType offline label="MembershipType" v-model="selectedRow.membershipType" :editMode="true"/>
+                            <subscriptionStatus offline label="SubscriptionStatus" v-model="selectedRow.subscriptionStatus" :editMode="true"/>
+                            <Email offline label="Email" v-model="selectedRow.email" :editMode="true"/>
                             <v-divider class="border-opacity-100 my-divider"></v-divider>
                             <v-layout row justify-end>
                                 <v-btn

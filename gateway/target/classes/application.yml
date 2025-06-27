@@ -24,11 +24,15 @@ spring:
         - id: subscriber
           uri: http://localhost:8085
           predicates:
-            - Path=/subscribers/**, /lookMyInfos/**
+            - Path=/subscribers/**, /lookUpMyInfos/**
         - id: aisystem
           uri: http://localhost:8086
           predicates:
-            - Path=, 
+            - Path=/eBooks/**, 
+        - id: pointsystem
+          uri: http://localhost:8087
+          predicates:
+            - Path=/userPoints/**, /lookUpSubscribers/**
         - id: frontend
           uri: http://localhost:8080
           predicates:
@@ -72,7 +76,11 @@ spring:
         - id: aisystem
           uri: http://aisystem:8080
           predicates:
-            - Path=, 
+            - Path=/eBooks/**, 
+        - id: pointsystem
+          uri: http://pointsystem:8080
+          predicates:
+            - Path=/userPoints/**, 
         - id: frontend
           uri: http://frontend:8080
           predicates:

@@ -9,15 +9,16 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class ListOutEbook extends AbstractEvent {
+public class ListOutEBook extends AbstractEvent {
 
-    private Long id;
+    private Integer pid;
+    private String ebooks;
 
-    public ListOutEbook(EBookPlatform aggregate) {
+    public ListOutEBook(EBookPlatform aggregate) {
         super(aggregate);
     }
 
-    public ListOutEbook() {
+    public ListOutEBook() {
         super();
     }
 }

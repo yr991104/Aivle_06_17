@@ -28,7 +28,8 @@
                         <th>Id</th>
                         <th>Name</th>
                         <th>IsApproved</th>
-                        <th>EBook</th>
+                        <th>Ebooks</th>
+                        <th>UserId</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -40,7 +41,8 @@
                             <td class="font-semibold">{{ idx + 1 }}</td>
                             <td class="whitespace-nowrap" label="Name">{{ val.name }}</td>
                             <td class="whitespace-nowrap" label="IsApproved">{{ val.isApproved }}</td>
-                            <td class="whitespace-nowrap" label="EBook">{{ val.eBook }}</td>
+                            <td class="whitespace-nowrap" label="Ebooks">{{ val.ebooks }}</td>
+                            <td class="whitespace-nowrap" label="UserId">{{ val.userId }}</td>
                             <v-row class="ma-0 pa-4 align-center">
                                 <v-spacer></v-spacer>
                                 <Icon style="cursor: pointer;" icon="mi:delete" @click="deleteRow(val)" />
@@ -105,7 +107,8 @@
                             <String label="AuthorId" v-model="selectedRow.authorId" :editMode="true"/>
                             <String label="Name" v-model="selectedRow.name" :editMode="true"/>
                             <Boolean label="IsApproved" v-model="selectedRow.isApproved" :editMode="true"/>
-                            <Books offline label="EBook" v-model="selectedRow.eBook" :editMode="true"/>
+                            <String label="Ebooks" v-model="selectedRow.ebooks" :editMode="true"/>
+                            <String label="UserId" v-model="selectedRow.userId" :editMode="true"/>
                             <v-divider class="border-opacity-100 my-divider"></v-divider>
                             <v-layout row justify-end>
                                 <v-btn

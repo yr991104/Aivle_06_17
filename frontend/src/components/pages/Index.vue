@@ -62,7 +62,19 @@ export default {
       },
       {
           text: "본인 정보 조회",
-          link: "/lookMyInfos",
+          link: "/lookUpMyInfos",
+      },
+      {
+          text: "전자책",
+          link: "/eBooks",
+      },
+      {
+          text: "포인트",
+          link: "/userPoints",
+      },
+      {
+          text: "구독자 정보 조회",
+          link: "/lookUpSubscribers",
       },
     ],
   }),

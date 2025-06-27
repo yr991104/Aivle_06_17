@@ -36,8 +36,20 @@ const router = createRouter({
       component: () => import('../components/ui/SubscriberGrid.vue'),
     },
     {
-      path: '/lookMyInfos',
-      component: () => import('../components/LookMyInfoView.vue'),
+      path: '/lookUpMyInfos',
+      component: () => import('../components/LookUpMyInfoView.vue'),
+    },
+    {
+      path: '/eBooks',
+      component: () => import('../components/ui/EBookGrid.vue'),
+    },
+    {
+      path: '/userPoints',
+      component: () => import('../components/ui/UserPointGrid.vue'),
+    },
+    {
+      path: '/lookUpSubscribers',
+      component: () => import('../components/LookUpSubscriberView.vue'),
     },
   ],
 })

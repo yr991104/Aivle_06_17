@@ -34,6 +34,7 @@ jobs:
           mvn clean package -f ./ebookplatform/pom.xml
           mvn clean package -f ./subscriber/pom.xml
           mvn clean package -f ./aisystem/pom.xml
+          mvn clean package -f ./pointsystem/pom.xml
 
       - name: Docker Build and push for Manageauthor
         uses: docker/build-push-action@v4
@@ -84,4 +85,14 @@ jobs:
           tags: |
             ghcr.io/${{ github.repository }}/aisystem:latest
             ghcr.io/${{ github.repository }}/aisystem:${{ github.ref_name }}
+            
+      - name: Docker Build and push for Pointsystem
+        uses: docker/build-push-action@v4
+        with:
+          context: ./pointsystem
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/pointsystem:latest
+            ghcr.io/${{ github.repository }}/pointsystem:${{ github.ref_name }}
             

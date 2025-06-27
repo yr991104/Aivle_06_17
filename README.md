@@ -25,6 +25,7 @@ See the README.md files inside the each microservices directory:
 - ebookplatform
 - subscriber
 - aisystem
+- pointsystem
 
 
 ## Run API Gateway (Spring Gateway)
@@ -36,23 +37,28 @@ mvn spring-boot:run
 ## Test by API
 - manageauthor
 ```
- http :8088/authors authorId="authorId"name="name"isApproved="isApproved"
+ http :8088/authors authorId="authorId"name="name"isApproved="isApproved"ebooks="ebooks"userId="userId"
 ```
 - adminsystem
 ```
- http :8088/authors authorId="authorId"name="name"isApproved="isApproved"
- http :8088/eBooks ebookId="ebookId"title="title"authorId="authorId"contentId="contentId"coverImage="coverImage"summary="summary"isPublicationApproved="isPublicationApproved"publicationStatus="publicationStatus"
+ http :8088/authors authorId="authorId"name="name"isApproved="isApproved"ebooks="ebooks"userId="userId"
+ http :8088/eBooks ebookId="ebookId"title="title"authorId="authorId"content="content"coverImage="coverImage"summary="summary"price="price"category="category"countViews="countViews"
 ```
 - ebookplatform
 ```
- http :8088/eBookPlatforms id="id"ebookId="ebookId"authorId="authorId"contentId="contentId"aiGeneratedCover="aiGeneratedCover"ebookStatus="ebookStatus"registeredAt="registeredAt"
+ http :8088/eBookPlatforms pid="pid"ebooks="ebooks"aiGeneratedCover="aiGeneratedCover"registeredAt="registeredAt"
 ```
 - subscriber
 ```
- http :8088/subscribers id="id"subscriberId="subscriberId"userId="userId"subscriptionStatus="subscriptionStatus"subscriptionType="subscriptionType"startedAt="startedAt"expiredAt="expiredAt"
+ http :8088/subscribers subscriberId="subscriberId"userId="userId"subscriptionType="subscriptionType"startedAt="startedAt"expiredAt="expiredAt"password="password"
 ```
 - aisystem
 ```
+ http :8088/eBooks ebookId="ebookId"title="title"authorId="authorId"content="content"coverImage="coverImage"summary="summary"isPublicationApproved="isPublicationApproved"price="price"category="category"countViews="countViews"
+```
+- pointsystem
+```
+ http :8088/userPoints userId="userId"point="point"
 ```
 
 

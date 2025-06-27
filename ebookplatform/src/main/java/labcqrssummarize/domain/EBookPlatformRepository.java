@@ -10,4 +10,4 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
     path = "eBookPlatforms"
 )
 public interface EBookPlatformRepository
-    extends PagingAndSortingRepository<EBookPlatform, Long> {}
+    extends PagingAndSortingRepository<EBookPlatform, Integer> {}

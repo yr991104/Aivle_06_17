@@ -16,8 +16,8 @@
             :editMode="editMode"
         />
         <String
-            label="ContentId"
-            v-model="value.contentId"
+            label="Content"
+            v-model="value.content"
             :editMode="editMode"
         />
         <String
@@ -30,15 +30,27 @@
             v-model="value.summary"
             :editMode="editMode"
         />
-        <Boolean
-            label="IsPublicationApproved"
-            v-model="value.isPublicationApproved"
+        <Number
+            label="Price"
+            v-model="value.price"
             :editMode="editMode"
         />
         <String
+            label="Category"
+            v-model="value.category"
+            :editMode="editMode"
+        />
+        <Number
+            label="CountViews"
+            v-model="value.countViews"
+            :editMode="editMode"
+        />
+        <publicationStatus
+            offline
             label="PublicationStatus"
             v-model="value.publicationStatus"
             :editMode="editMode"
+            @change="change"
         />
         <v-row class="ma-0 pa-0">
             <v-spacer></v-spacer>

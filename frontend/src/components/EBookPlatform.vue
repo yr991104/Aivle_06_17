@@ -1,28 +1,18 @@
 <template>
     <div>
-        <String
-            label="EbookId"
-            v-model="value.ebookId"
+        <Number
+            label="Pid"
+            v-model="value.pid"
             :editMode="editMode"
         />
         <String
-            label="AuthorId"
-            v-model="value.authorId"
-            :editMode="editMode"
-        />
-        <String
-            label="ContentId"
-            v-model="value.contentId"
+            label="Ebooks"
+            v-model="value.ebooks"
             :editMode="editMode"
         />
         <String
             label="AiGeneratedCover"
             v-model="value.aiGeneratedCover"
-            :editMode="editMode"
-        />
-        <String
-            label="EbookStatus"
-            v-model="value.ebookStatus"
             :editMode="editMode"
         />
         <Date

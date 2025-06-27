@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.SubscriberApplication;
-import labcqrssummarize.domain.CancelSubscribe;
-import labcqrssummarize.domain.RequestSubscribe;
-import labcqrssummarize.domain.SignUp;
+import labcqrssummarize.domain.MembershipRequested;
+import labcqrssummarize.domain.SignedUp;
+import labcqrssummarize.domain.SubscribeCanceled;
+import labcqrssummarize.domain.SubscribeRequested;
 import lombok.Data;
 
 @Entity
@@ -20,14 +21,9 @@ import lombok.Data;
 public class Subscriber {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
     private String subscriberId;
 
     private String userId;
-
-    private String subscriptionStatus;
 
     private String subscriptionType;
 
@@ -37,18 +33,28 @@ public class Subscriber {
 
     private ViewHistory viewHistory;
 
-    private PointHistory pointHistory;
+    private membershipType membershipType;
+
+    private subscriptionStatus subscriptionStatus;
+
+    private String password;
+
+    @Embedded
+    private Email email;
 
     @PostPersist
     public void onPostPersist() {
-        SignUp signUp = new SignUp(this);
-        signUp.publishAfterCommit();
+        SignedUp signedUp = new SignedUp(this);
+        signedUp.publishAfterCommit();
 
-        RequestSubscribe requestSubscribe = new RequestSubscribe(this);
-        requestSubscribe.publishAfterCommit();
+        SubscribeRequested subscribeRequested = new SubscribeRequested(this);
+        subscribeRequested.publishAfterCommit();
 
-        CancelSubscribe cancelSubscribe = new CancelSubscribe(this);
-        cancelSubscribe.publishAfterCommit();
+        SubscribeCanceled subscribeCanceled = new SubscribeCanceled(this);
+        subscribeCanceled.publishAfterCommit();
+
+        MembershipRequested membershipRequested = new MembershipRequested(this);
+        membershipRequested.publishAfterCommit();
     }
 
     public static SubscriberRepository repository() {
@@ -59,7 +65,7 @@ public class Subscriber {
     }
 
     //<<< Clean Arch / Port Method
-    public static void recommandKtMembership(SignUp signUp) {
+    public static void recommandKtMembership(SignedUp signedUp) {
         //implement business logic here:
 
         /** Example 1:  new item 
@@ -71,7 +77,7 @@ public class Subscriber {
         /** Example 2:  finding and process
         
 
-        repository().findById(signUp.get???()).ifPresent(subscriber->{
+        repository().findById(signedUp.get???()).ifPresent(subscriber->{
             
             subscriber // do something
             repository().save(subscriber);

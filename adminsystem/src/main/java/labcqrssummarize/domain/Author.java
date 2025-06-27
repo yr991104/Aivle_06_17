@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.AdminsystemApplication;
-import labcqrssummarize.domain.RequestAsAuthorApproved;
-import labcqrssummarize.domain.RequestAsAuthorDenied;
+import labcqrssummarize.domain.RequestAuthorApproved;
+import labcqrssummarize.domain.RequestAuthorDenied;
 import lombok.Data;
 
 @Entity
@@ -25,19 +25,19 @@ public class Author {
 
     private Boolean isApproved;
 
-    private Books eBook;
+    private String ebooks;
 
-    @PostPersist
-    public void onPostPersist() {
-        RequestAsAuthorApproved requestAsAuthorApproved = new RequestAsAuthorApproved(
+    private String userId;
+
+    @PreUpdate
+    public void onPreUpdate() {
+        RequestAuthorApproved requestAuthorApproved = new RequestAuthorApproved(
             this
         );
-        requestAsAuthorApproved.publishAfterCommit();
+        requestAuthorApproved.publishAfterCommit();
 
-        RequestAsAuthorDenied requestAsAuthorDenied = new RequestAsAuthorDenied(
-            this
-        );
-        requestAsAuthorDenied.publishAfterCommit();
+        RequestAuthorDenied requestAuthorDenied = new RequestAuthorDenied(this);
+        requestAuthorDenied.publishAfterCommit();
     }
 
     public static AuthorRepository repository() {

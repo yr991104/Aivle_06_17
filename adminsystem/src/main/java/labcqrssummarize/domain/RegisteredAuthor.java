@@ -9,5 +9,7 @@ import lombok.*;
 @ToString
 public class RegisteredAuthor extends AbstractEvent {
 
-    private Long id;
+    private String authorId;
+    private Boolean isApproved;
+    private String userId;
 }

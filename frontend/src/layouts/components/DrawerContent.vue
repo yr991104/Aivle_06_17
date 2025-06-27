@@ -56,9 +56,28 @@ import {
         <VerticalNavLink
             :item="{
                 title: '본인 정보 조회',
-                to: '/lookMyInfos',
+                to: '/lookUpMyInfos',
             }"
         />
         <VerticalNavSectionTitle :item="{ heading: 'AI 시스템' }" />
+        <VerticalNavLink
+            :item="{
+                title: '전자책',
+                to: '/eBooks',
+            }"
+        />
+        <VerticalNavSectionTitle :item="{ heading: '포인트 시스템' }" />
+        <VerticalNavLink
+            :item="{
+                title: '포인트',
+                to: '/userPoints',
+            }"
+        />
+        <VerticalNavLink
+            :item="{
+                title: '구독자 정보 조회',
+                to: '/lookUpSubscribers',
+            }"
+        />
     </ul>
 </template>

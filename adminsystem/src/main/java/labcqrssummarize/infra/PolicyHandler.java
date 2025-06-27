@@ -30,12 +30,12 @@ public class PolicyHandler {
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='RegisteredAuthor'"
     )
-    public void wheneverRegisteredAuthor_RequestAuthorAccept(
+    public void wheneverRegisteredAuthor_HandleAuthorRegistrationRequest(
         @Payload RegisteredAuthor registeredAuthor
     ) {
         RegisteredAuthor event = registeredAuthor;
         System.out.println(
-            "\n\n##### listener RequestAuthorAccept : " +
+            "\n\n##### listener HandleAuthorRegistrationRequest : " +
             registeredAuthor +
             "\n\n"
         );
@@ -45,15 +45,15 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='ContentWritten'"
+        condition = "headers['type']=='WrittenContent'"
     )
-    public void wheneverContentWritten_RequestContentrAccept(
-        @Payload ContentWritten contentWritten
+    public void wheneverWrittenContent_HandleContentRegistrationRequest(
+        @Payload WrittenContent writtenContent
     ) {
-        ContentWritten event = contentWritten;
+        WrittenContent event = writtenContent;
         System.out.println(
-            "\n\n##### listener RequestContentrAccept : " +
-            contentWritten +
+            "\n\n##### listener HandleContentRegistrationRequest : " +
+            writtenContent +
             "\n\n"
         );
         // Comments //
@@ -61,6 +61,23 @@ public class PolicyHandler {
         //
         // 굳이 관리자가 안해도 자동으로 요청 처리하는게 편할거 같음
 
+        // Sample Logic //
+
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestPublish'"
+    )
+    public void wheneverRequestPublish_HandlePublishRequest(
+        @Payload RequestPublish requestPublish
+    ) {
+        RequestPublish event = requestPublish;
+        System.out.println(
+            "\n\n##### listener HandlePublishRequest : " +
+            requestPublish +
+            "\n\n"
+        );
         // Sample Logic //
 
     }

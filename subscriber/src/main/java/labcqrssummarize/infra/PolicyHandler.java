@@ -25,12 +25,14 @@ public class PolicyHandler {
 
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='SignUp'"
+        condition = "headers['type']=='SignedUp'"
     )
-    public void wheneverSignUp_RecommandKtMembership(@Payload SignUp signUp) {
-        SignUp event = signUp;
+    public void wheneverSignedUp_RecommandKtMembership(
+        @Payload SignedUp signedUp
+    ) {
+        SignedUp event = signedUp;
         System.out.println(
-            "\n\n##### listener RecommandKtMembership : " + signUp + "\n\n"
+            "\n\n##### listener RecommandKtMembership : " + signedUp + "\n\n"
         );
 
         // Comments //
@@ -38,19 +40,6 @@ public class PolicyHandler {
 
         // Sample Logic //
         Subscriber.recommandKtMembership(event);
-    }
-
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='SignUp'"
-    )
-    public void wheneverSignUp_GivePointWhenSignUp(@Payload SignUp signUp) {
-        SignUp event = signUp;
-        System.out.println(
-            "\n\n##### listener GivePointWhenSignUp : " + signUp + "\n\n"
-        );
-        // Sample Logic //
-
     }
 }
 //>>> Clean Arch / Inbound Adaptor
