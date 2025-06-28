@@ -40,5 +40,38 @@ public class UserPoint {
         );
         return userPointRepository;
     }
+
+    //<<< Clean Arch / Port Method
+    public static void givePoint(GivePointCommand givePointCommand) {
+        UserPoint userPoint = new UserPoint();
+        userPoint.setUserId(givePointCommand.getUserId());
+        userPoint.setPoint(givePointCommand.getPoint());
+        
+        // Create point history
+        PointHistory pointHistory = new PointHistory();
+        pointHistory.setChangeAmount("+" + givePointCommand.getPoint().toString());
+        pointHistory.setDescription(givePointCommand.getDescription());
+        pointHistory.setChangedAt(LocalDate.now().toString());
+        userPoint.setPointHistory(pointHistory);
+        
+        repository().save(userPoint);
+    }
+
+    public static void reducePoint(ReducePointCommand reducePointCommand) {
+        UserPoint userPoint = repository().findById(reducePointCommand.getUserId()).orElse(null);
+        if (userPoint != null) {
+            userPoint.setPoint(userPoint.getPoint() - reducePointCommand.getPoint());
+            
+            // Create point history
+            PointHistory pointHistory = new PointHistory();
+            pointHistory.setChangeAmount("-" + reducePointCommand.getPoint().toString());
+            pointHistory.setDescription(reducePointCommand.getDescription());
+            pointHistory.setChangedAt(LocalDate.now().toString());
+            userPoint.setPointHistory(pointHistory);
+            
+            repository().save(userPoint);
+        }
+    }
+    //>>> Clean Arch / Port Method
 }
 //>>> DDD / Aggregate Root

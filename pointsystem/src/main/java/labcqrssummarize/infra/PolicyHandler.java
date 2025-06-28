@@ -33,13 +33,76 @@ public class PolicyHandler {
             "\n\n##### listener CheckMembership : " + signedUp + "\n\n"
         );
 
-        // Comments //
-        //KT 멤버쉽 가입했는지 확인
-
-        // Sample Logic //
+        // Check if user is KT member
+        String membershipType = signedUp.getMembershipType() != null ? 
+            signedUp.getMembershipType().toString() : "";
+        
+        Integer pointsToGive;
+        String description;
+        
+        if ("KT".equals(membershipType)) {
+            pointsToGive = 5000;
+            description = "KT 멤버십 가입 보너스 포인트";
+        } else {
+            pointsToGive = 1000;
+            description = "일반 가입 보너스 포인트";
+        }
 
         GivePointCommand command = new GivePointCommand();
+        command.setUserId(signedUp.getUserId());
+        command.setPoint(pointsToGive);
+        command.setDescription(description);
+        
         UserPoint.givePoint(command);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='ViewHistory'"
+    )
+    public void wheneverViewHistory_ReducePointsForReading(@Payload ViewHistory viewHistory) {
+        ViewHistory event = viewHistory;
+        System.out.println(
+            "\n\n##### listener ReducePointsForReading : " + viewHistory + "\n\n"
+        );
+
+        String subscriptionType = viewHistory.getSubscriptionType();
+        String membershipType = viewHistory.getMembershipType();
+        
+        // Check if user is a member (either normal or KT)
+        boolean isMember = "NORMAL".equals(membershipType) || "KT".equals(membershipType);
+        
+        // Check if user is subscribed
+        boolean isSubscribed = "subscribed".equals(subscriptionType);
+        
+        Integer pointsToReduce;
+        String description;
+        
+        if (!isMember) {
+            // Non-members cannot read books
+            System.out.println("Non-member user cannot read books: " + viewHistory.getUserId());
+            return;
+        }
+        
+        if (isSubscribed) {
+            pointsToReduce = 0;
+            description = "구독자 무료 읽기";
+        } else {
+            pointsToReduce = 10;
+            description = "비구독자 이북 읽기 포인트 차감";
+        }
+
+        if (pointsToReduce > 0) {
+            ReducePointCommand command = new ReducePointCommand();
+            command.setUserId(viewHistory.getUserId());
+            command.setPoint(pointsToReduce);
+            command.setDescription(description);
+            
+            UserPoint.reducePoint(command);
+        } else {
+            // Log free reading for subscribers
+            System.out.println("Subscriber free reading: " + viewHistory.getUserId());
+        }
     }
 }
 //>>> Clean Arch / Inbound Adaptor
