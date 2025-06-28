@@ -12,8 +12,10 @@ import lombok.*;
 public class EstimatiedPriceAndCategory extends AbstractEvent {
 
     private String ebookId;
-    private String title;
     private String summary;
+    private String content;
+    private Integer price;
+    private String category;
 
     public EstimatiedPriceAndCategory(EBook aggregate) {
         super(aggregate);
