@@ -45,7 +45,7 @@ GivePointCommand: 포인트를 지급하기 위한 커맨드
 
 ReducePointCommand: 포인트를 차감하기 위한 커맨드
 
-ViewHistory: 전자책 읽기를 위한 이벤트
+ViewHistory: 읽은 내역에 대한 내용용
 
 비즈니스 로직 (PolicyHandler)
 wheneverSignedUp_CheckMembership(): 가입 보너스 포인트를 처리합니다.
