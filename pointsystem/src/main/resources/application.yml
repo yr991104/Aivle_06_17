@@ -4,6 +4,12 @@ server:
 spring:
   application:
     name: pointsystem
+
+# API URLs for external services
+api:
+  url:
+    aisystem: http://localhost:8086
+
 ---
 
 spring:
@@ -80,5 +86,10 @@ spring:
         event-out:
           destination: labcqrssummarize
           contentType: application/json
+
+# API URLs for external services in Docker environment
+api:
+  url:
+    aisystem: http://aisystem:8086
 
 

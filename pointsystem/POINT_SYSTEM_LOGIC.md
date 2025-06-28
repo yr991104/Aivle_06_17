@@ -15,7 +15,7 @@ Subscription Status:
 
 Subscribed: 0 포인트 (무료 읽기)
 
-Non-subscribed: 전자책 1권당 10 포인트 차감
+Non-subscribed: Ebook price in points (retrieved from aisystem EBook.price field)
 
 구현 세부 사항
 이벤트 기반 아키텍처
@@ -33,7 +33,9 @@ ViewHistory Event: 사용자가 전자책을 읽을 때 트리거됩니다.
 
 구독 상태 (Subscribed vs Non-subscribed)를 확인합니다.
 
-Non-subscribed 회원에게만 포인트를 차감합니다.
+Retrieves book price from aisystem EBook.price field
+
+Deducts points based on actual book price for non-subscribed members
 
 핵심 구성 요소
 도메인 클래스
@@ -66,7 +68,7 @@ NORMAL: 1,000 가입 보너스가 있는 일반 회원
 구독 상태
 subscribed: 전자책 무료 읽기 (0 포인트)
 
-non-subscribed: 전자책 유료 읽기 (10 포인트)
+non-subscribed: 전자책 유료 읽기 (ebook price in points)
 
 접근 제어
 회원 (KT 또는 Normal)만 책을 읽을 수 있습니다.
@@ -83,60 +85,6 @@ UserPoint_table: 사용자 포인트 잔액을 저장합니다.
 
 PointHistory: 설명과 함께 모든 포인트 거래를 추적합니다.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # Point System Logic Implementation
 
 ## Overview
@@ -152,7 +100,7 @@ The point system manages user points in the e-book platform with the following b
 - **Membership Required**: Only members (normal or KT) can read books
 - **Subscription Status**: 
   - **Subscribed**: 0 points (free reading)
-  - **Non-subscribed**: 10 points per e-book read
+  - **Non-subscribed**: Ebook price in points (retrieved from aisystem EBook.price field)
 
 ## Implementation Details
 
@@ -166,7 +114,8 @@ The system uses Kafka events to handle point operations:
 2. **ViewHistory Event**: Triggers when a user reads an e-book
    - Checks if user is a member (required for reading)
    - Checks subscription status (subscribed vs non-subscribed)
-   - Deducts points only for non-subscribed members
+   - Retrieves book price from aisystem EBook.price field
+   - Deducts points based on actual book price for non-subscribed members
 
 ### Key Components
 
@@ -175,7 +124,11 @@ The system uses Kafka events to handle point operations:
 - `PointHistory`: Tracks all point transactions
 - `GivePointCommand`: Command for giving points
 - `ReducePointCommand`: Command for reducing points
-- `ViewHistory`: Event for e-book reading
+- `ViewHistory`: Event for e-book reading (includes ebookId)
+
+#### External Services
+- `EBookService`: Feign Client to retrieve book information from aisystem
+- `EBook`: DTO for aisystem EBook data (includes price field)
 
 #### Business Logic (PolicyHandler)
 - `wheneverSignedUp_CheckMembership()`: Handles sign-up bonus points
@@ -193,16 +146,47 @@ The system uses Kafka events to handle point operations:
 
 ### Subscription Status
 - **subscribed**: Free e-book reading (0 points)
-- **non-subscribed**: Paid e-book reading (10 points)
+- **non-subscribed**: Paid e-book reading (ebook price in points)
 
 ### Access Control
 - Only members (KT or normal) can read books
 - Non-members are blocked from reading
 
+### Pricing Model
+- **Subscribers**: Read all books for free
+- **Non-subscribers**: Pay the actual price of each book in points
+- **Book prices**: Retrieved from aisystem EBook.price field
+- **Price ranges**: Variable based on book value (25, 50, 100, 150, 200+ points)
+
+## Integration with Aisystem
+
+### EBook Service Integration
+- **Service**: `EBookService` (Feign Client)
+- **Endpoint**: `GET /eBooks/{ebookId}` from aisystem
+- **Data**: Retrieves EBook.price field for point calculation
+- **Error Handling**: Graceful fallback if service is unavailable
+
+### Configuration
+```yaml
+api:
+  url:
+    aisystem: http://localhost:8086  # Local development
+    aisystem: http://aisystem:8086   # Docker environment
+```
+
 ## Event Flow
 1. User signs up → `SignedUp` event → Point system gives bonus points
-2. User reads e-book → `ViewHistory` event → Point system checks membership and subscription, then deducts points if applicable
+2. User reads e-book → `ViewHistory` event (with ebookId) → Point system:
+   - Checks membership and subscription
+   - Calls aisystem to get book price
+   - Deducts points based on actual book price
 
 ## Database Schema
 - `UserPoint_table`: Stores user point balances
-- `PointHistory`: Tracks all point transactions with descriptions 
+- `PointHistory`: Tracks all point transactions with descriptions
+
+## Error Handling
+- **Service unavailable**: Logs error, sets points to 0
+- **Invalid ebookId**: Logs error, sets points to 0
+- **Null price**: Defaults to 0 points
+- **Network issues**: Graceful degradation with logging 
