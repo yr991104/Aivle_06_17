@@ -11,6 +11,7 @@ import labcqrssummarize.domain.RegisterSubscriberCommand;
 import labcqrssummarize.domain.RegisterSubscriptionCommand;
 import labcqrssummarize.domain.Subscriber;
 import labcqrssummarize.domain.SubscriberRepository;
+import labcqrssummarize.domain.RegisterMembershipCommand;
 
 @RestController
 @RequestMapping("/subscribers")
@@ -57,9 +58,14 @@ public class SubscriberController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+    @PostMapping("/{id}/membership")
+    public ResponseEntity<Subscriber> requestMembership(
+            @PathVariable("id") String id
+    ) {
+        Subscriber s = subscriberRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        s.requestMembership(new RegisterMembershipCommand());
+        return ResponseEntity.ok(s);
+    }
 }
-
-
-
-
 //>>> Clean Arch / Inbound Adaptor

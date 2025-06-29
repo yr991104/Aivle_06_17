@@ -83,6 +83,12 @@ public class Subscriber {
         repository().save(this);
         new SubscribeCanceled(this).publishAfterCommit();
     }
+    //KT멤버쉽 신청
+    public void requestMembership(RegisterMembershipCommand cmd) {
+        this.membershipType     = MembershipType.KT;
+        repository().save(this);
+        new MembershipRequested(this).publishAfterCommit();
+    }    
 
     public static SubscriberRepository repository() {
         return SubscriberApplication.applicationContext.getBean(SubscriberRepository.class);
