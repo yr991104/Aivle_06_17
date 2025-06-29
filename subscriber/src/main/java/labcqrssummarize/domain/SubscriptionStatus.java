@@ -1,7 +1,8 @@
 package labcqrssummarize.domain;
 
 public enum SubscriptionStatus {
-    SUBSCRIBED,
-    CANCELED,
-    EXPIRED
+    NONE,        // 회원가입 시 구독 미상태를 위해 추가
+    SUBSCRIBED,  
+    CANCELED,   
+    EXPIRED      
 }

@@ -1,15 +1,18 @@
 package labcqrssummarize.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.*;
+
 import labcqrssummarize.SubscriberApplication;
 import lombok.Data;
 
+//<<< DDD / Aggregate Root
 @Entity
 @Table(name = "Subscriber_table")
 @Data
-//<<< DDD / Aggregate Root
 public class Subscriber {
 
     @Id
@@ -17,54 +20,84 @@ public class Subscriber {
 
     private String userId;
 
-    private String subscriptionType;
-
-    private LocalDateTime startedAt;
-
-    private LocalDateTime expiredAt;
-
-    // 전자책 열람 기록 - 일대다 관계로 가정
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscriber_id")
-    private List<ViewHistory> viewHistory;
-
-    @Enumerated(EnumType.STRING)
-    private MembershipType membershipType;
-
-    @Enumerated(EnumType.STRING)
-    private SubscriptionStatus subscriptionStatus;
-
     private String password;
 
-    private String email;  // Email 별도 클래스 없이 String 타입으로 사용
+    private String email;
 
-    @PostPersist
-    public void onPostPersist() {
-        SignedUp signedUp = new SignedUp(this);
-        signedUp.publishAfterCommit();
+    @Enumerated(EnumType.STRING)
+    private SubscriptionType subscriptionType;
 
-        SubscribeRequested subscribeRequested = new SubscribeRequested(this);
-        subscribeRequested.publishAfterCommit();
+    @Enumerated(EnumType.STRING)
+    private MembershipType membershipType = MembershipType.NORMAL;
 
-        SubscribeCanceled subscribeCanceled = new SubscribeCanceled(this);
-        subscribeCanceled.publishAfterCommit();
+    /**
+     * NONE: 가입만 된 상태
+     * SUBSCRIBED: 실제 구독 진행된 상태
+     * CANCELED: 구독 취소된 상태
+     * EXPIRED: 구독 기간 만료된 상태
+     */
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus subscriptionStatus = SubscriptionStatus.NONE;
 
-        MembershipRequested membershipRequested = new MembershipRequested(this);
-        membershipRequested.publishAfterCommit();
-    }
+    private LocalDateTime startedAt;
+    private LocalDateTime expiredAt;
 
-    public static SubscriberRepository repository() {
-        SubscriberRepository subscriberRepository = SubscriberApplication.applicationContext.getBean(
-            SubscriberRepository.class
-        );
-        return subscriberRepository;
+    @ElementCollection
+    @CollectionTable(
+        name = "Subscriber_ViewHistory",
+        joinColumns = @JoinColumn(name = "subscriber_id")
+    )
+    private List<ViewHistory> viewHistory = new ArrayList<>();
+
+    protected Subscriber() {}
+
+    //<<< Clean Arch / Port Method
+
+    public static Subscriber registerSubscriber(RegisterSubscriberCommand cmd) {
+        Subscriber subscriber = new Subscriber();
+
+        // 1) 구독자 식별 ID 자동생성
+        subscriber.subscriberId = UUID.randomUUID().toString();
+
+        //사용자 입력에 따라 저장
+        subscriber.userId = cmd.getUserId();
+        subscriber.password = cmd.getPassword();
+        subscriber.email = cmd.getEmail();
+
+        // 구독 유형 기본 NONE
+        subscriber.subscriptionType = cmd.getSubscriptionType();
+
+        // 멤버쉽 기본 NORMAL
+        if (cmd.getMembershipType() != null) {
+            subscriber.membershipType = cmd.getMembershipType();
+        }
+
+       
+        repository().save(subscriber);
+        new SignedUp(subscriber).publishAfterCommit();
+
+        // 테스트 확인용 리턴
+        return subscriber;
     }
 
     //<<< Clean Arch / Port Method
-    public static void recommandKtMembership(SignedUp signedUp) {
-        // business logic here
+    public void cancelSubscription() {
+        this.subscriptionStatus = SubscriptionStatus.CANCELED;
+        repository().save(this);
+        new SubscribeCanceled(this).publishAfterCommit();
     }
-    //>>> Clean Arch / Port Method
 
+    //KT 고객 추천 미완성
+    public static void recommandKtMembership(SignedUp event) {
+        if (event.getMembershipType() == MembershipType.KT) {
+            System.out.println("KT 고객에게 추천 메시지를 전송합니다: " + event.getUserId());
+        }
+    }
+
+    public static SubscriberRepository repository() {
+        return SubscriberApplication.applicationContext.getBean(SubscriberRepository.class);
+    }
 }
-//>>> DDD / Aggregate Root
+
+
+
