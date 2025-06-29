@@ -19,9 +19,7 @@ public class Subscriber {
     private String subscriberId;
 
     private String userId;
-
     private String password;
-
     private String email;
 
     @Enumerated(EnumType.STRING)
@@ -30,12 +28,7 @@ public class Subscriber {
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType = MembershipType.NORMAL;
 
-    /**
-     * NONE: 가입만 된 상태
-     * SUBSCRIBED: 실제 구독 진행된 상태
-     * CANCELED: 구독 취소된 상태
-     * EXPIRED: 구독 기간 만료된 상태
-     */
+
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus = SubscriptionStatus.NONE;
 
@@ -52,32 +45,33 @@ public class Subscriber {
     protected Subscriber() {}
 
     //<<< Clean Arch / Port Method
-
+    //회원 가입 처리
     public static Subscriber registerSubscriber(RegisterSubscriberCommand cmd) {
         Subscriber subscriber = new Subscriber();
 
-        // 1) 구독자 식별 ID 자동생성
-        subscriber.subscriberId = UUID.randomUUID().toString();
+        subscriber.subscriberId     = UUID.randomUUID().toString();
+        subscriber.userId           = cmd.getUserId();
+        subscriber.password         = cmd.getPassword();
+        subscriber.email            = cmd.getEmail();
+        subscriber.subscriptionType = cmd.getSubscriptionType(); 
 
-        //사용자 입력에 따라 저장
-        subscriber.userId = cmd.getUserId();
-        subscriber.password = cmd.getPassword();
-        subscriber.email = cmd.getEmail();
-
-        // 구독 유형 기본 NONE
-        subscriber.subscriptionType = cmd.getSubscriptionType();
-
-        // 멤버쉽 기본 NORMAL
-        if (cmd.getMembershipType() != null) {
-            subscriber.membershipType = cmd.getMembershipType();
-        }
-
-       
         repository().save(subscriber);
         new SignedUp(subscriber).publishAfterCommit();
-
-        // 테스트 확인용 리턴
         return subscriber;
+    }
+
+    //<<< Clean Arch / Port Method
+    //구독 신청 메서드
+    public void subscribe(RegisterSubscriptionCommand cmd) {
+        this.subscriptionType   = cmd.getSubscriptionType();
+        this.subscriptionStatus = SubscriptionStatus.SUBSCRIBED;
+        this.startedAt          = LocalDateTime.now();
+        this.expiredAt          = this.startedAt.plusMonths(
+            this.subscriptionType == SubscriptionType.MONTHLY ? 1 : 12
+        );
+
+        repository().save(this);
+        new SubscribeRequested(this).publishAfterCommit();
     }
 
     //<<< Clean Arch / Port Method
@@ -87,17 +81,11 @@ public class Subscriber {
         new SubscribeCanceled(this).publishAfterCommit();
     }
 
-    //KT 고객 추천 미완성
-    public static void recommandKtMembership(SignedUp event) {
-        if (event.getMembershipType() == MembershipType.KT) {
-            System.out.println("KT 고객에게 추천 메시지를 전송합니다: " + event.getUserId());
-        }
-    }
-
     public static SubscriberRepository repository() {
         return SubscriberApplication.applicationContext.getBean(SubscriberRepository.class);
     }
 }
+
 
 
 

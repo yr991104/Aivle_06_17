@@ -5,10 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
-
+import org.springframework.web.server.ResponseStatusException;
 import labcqrssummarize.domain.RegisterSubscriberCommand;
+import labcqrssummarize.domain.RegisterSubscriptionCommand;
 import labcqrssummarize.domain.Subscriber;
 import labcqrssummarize.domain.SubscriberRepository;
+
 
 @RestController
 @RequestMapping("/subscribers")
@@ -29,13 +31,25 @@ public class SubscriberController {
             .body(created);
     }
 
+    @PostMapping("/{id}/subscribe")
+    public ResponseEntity<Subscriber> subscribe(
+            @PathVariable("id") String id,
+            @RequestBody RegisterSubscriptionCommand cmd
+    ) {
+        Subscriber subscriber = subscriberRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        subscriber.subscribe(cmd);
+        return ResponseEntity.ok(subscriber);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Subscriber> getSubscriber(@PathVariable String id) {
         return subscriberRepository.findById(id)
-            .map(sub -> ResponseEntity.ok(sub))
+            .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
 }
+
 
 
 //>>> Clean Arch / Inbound Adaptor

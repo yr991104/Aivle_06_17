@@ -1,34 +1,30 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDateTime;
 import labcqrssummarize.infra.AbstractEvent;
 import lombok.Data;
 import lombok.ToString;
 
-//<<< DDD / Domain Event: 구독 요청 발생
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Data
 @ToString
 public class SubscribeRequested extends AbstractEvent {
-
+    private String subscribeId;
     private String subscriberId;
-    private String userId;
-    private String email;
-    private SubscriptionType subscriptionType;
-    private MembershipType membershipType;
     private SubscriptionStatus subscriptionStatus;
+    private SubscriptionType subscriptionType;
     private LocalDateTime startedAt;
     private LocalDateTime expiredAt;
 
-    public SubscribeRequested(Subscriber aggregate) {
-        super(aggregate);
-        this.subscriberId      = aggregate.getSubscriberId();
-        this.userId            = aggregate.getUserId();
-        this.email             = aggregate.getEmail();
-        this.subscriptionType  = aggregate.getSubscriptionType();
-        this.membershipType    = aggregate.getMembershipType();
-        this.subscriptionStatus= aggregate.getSubscriptionStatus();
-        this.startedAt         = aggregate.getStartedAt();
-        this.expiredAt         = aggregate.getExpiredAt();
+    public SubscribeRequested(Subscriber agg) {
+        super(agg);
+        this.subscribeId        = UUID.randomUUID().toString();
+        this.subscriberId       = agg.getSubscriberId();
+        this.subscriptionStatus = agg.getSubscriptionStatus();
+        this.subscriptionType   = agg.getSubscriptionType();
+        this.startedAt          = agg.getStartedAt();
+        this.expiredAt          = agg.getExpiredAt();
     }
 
     public SubscribeRequested() {
