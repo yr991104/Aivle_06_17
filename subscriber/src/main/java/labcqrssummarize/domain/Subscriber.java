@@ -75,8 +75,11 @@ public class Subscriber {
     }
 
     //<<< Clean Arch / Port Method
-    public void cancelSubscription() {
+    //구독 취소 메서드 취소 시 즉시 취소(expiredAt에 현재 시간 표기)
+     public void cancelSubscription() {
         this.subscriptionStatus = SubscriptionStatus.CANCELED;
+        this.subscriptionType   = null;
+        this.expiredAt          = LocalDateTime.now();
         repository().save(this);
         new SubscribeCanceled(this).publishAfterCommit();
     }
@@ -85,7 +88,5 @@ public class Subscriber {
         return SubscriberApplication.applicationContext.getBean(SubscriberRepository.class);
     }
 }
-
-
 
 

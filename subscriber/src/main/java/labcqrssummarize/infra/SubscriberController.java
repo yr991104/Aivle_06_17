@@ -6,11 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
+
 import labcqrssummarize.domain.RegisterSubscriberCommand;
 import labcqrssummarize.domain.RegisterSubscriptionCommand;
 import labcqrssummarize.domain.Subscriber;
 import labcqrssummarize.domain.SubscriberRepository;
-
 
 @RestController
 @RequestMapping("/subscribers")
@@ -25,7 +25,6 @@ public class SubscriberController {
             @RequestBody RegisterSubscriberCommand cmd
     ) {
         Subscriber created = Subscriber.registerSubscriber(cmd);
-        // 테스트용 리턴 전체 바디
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(created);
@@ -42,6 +41,16 @@ public class SubscriberController {
         return ResponseEntity.ok(subscriber);
     }
 
+    @DeleteMapping("/{id}/cancel")
+    public ResponseEntity<Subscriber> cancel(
+            @PathVariable("id") String id
+    ) {
+        Subscriber s = subscriberRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        s.cancelSubscription();
+        return ResponseEntity.ok(s);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Subscriber> getSubscriber(@PathVariable String id) {
         return subscriberRepository.findById(id)
@@ -49,6 +58,7 @@ public class SubscriberController {
             .orElse(ResponseEntity.notFound().build());
     }
 }
+
 
 
 
