@@ -12,7 +12,7 @@ public class SignedUp extends AbstractEvent {
     private String userId;
     private String subscriptionType;
     private Object viewHistory;
-    private Object membershipType;
+    private membershipType membershipType;
     private Object subscriptionStatus;
     private String password;
     private Object email;
