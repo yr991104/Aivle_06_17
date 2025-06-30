@@ -13,7 +13,6 @@ public class GivenPoint extends AbstractEvent {
 
     private String userId;
     private Integer point;
-    private PointHistory pointHistory;
 
     public GivenPoint(UserPoint aggregate) {
         super(aggregate);

@@ -13,11 +13,16 @@ import org.springframework.web.bind.annotation.RestController;
 //<<< Clean Arch / Inbound Adaptor
 
 @RestController
-// @RequestMapping(value="/userPoints")
+@RequestMapping(value="/userPoints")
 @Transactional
 public class UserPointController {
 
     @Autowired
     UserPointRepository userPointRepository;
+
+    @PostMapping("/deduct")
+    public PointDeductionResponse deductPoint(@RequestBody PointDeductionRequest request) {
+        return UserPoint.deductPoint(request);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

@@ -36,30 +36,40 @@ public class PolicyHandler {
         // Comments //
         //KT 멤버쉽 가입했는지 확인
 
-        // Sample Logic //
-
+        // 멤버십 타입에 따라 포인트 지급
         GivePointCommand command = new GivePointCommand();
+        command.setUserId(event.getUserId());
+        
+        // membershipType enum으로 직접 비교
+        if (event.getMembershipType() == membershipType.KT) {
+            command.setPoint(5000); // KT 멤버십: 5000포인트 지급
+            System.out.println("KT 멤버십 가입 - 5000포인트 지급");
+        } else {
+            command.setPoint(1000); // NORMAL 멤버십: 1000포인트 지급
+            System.out.println("NORMAL 멤버십 가입 - 1000포인트 지급");
+        }
+        
         UserPoint.givePoint(command);
     }
 
-    @StreamListener(
-        value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='HandleEBookViewed'"
-    )
-    public void wheneverHandleEBookViewed_ReducePointRequested(
-        @Payload HandleEBookViewed handleEBookViewed
-    ) {
-        HandleEBookViewed event = handleEBookViewed;
-        System.out.println(
-            "\n\n##### listener ReducePointRequested : " +
-            handleEBookViewed +
-            "\n\n"
-        );
+    // @StreamListener(
+    //     value = KafkaProcessor.INPUT,
+    //     condition = "headers['type']=='HandleEBookViewed'"
+    // )
+    // public void wheneverHandleEBookViewed_ReducePointRequested(
+    //     @Payload HandleEBookViewed handleEBookViewed
+    // ) {
+    //     HandleEBookViewed event = handleEBookViewed;
+    //     System.out.println(
+    //         "\n\n##### listener ReducePointRequested : " +
+    //         handleEBookViewed +
+    //         "\n\n"
+    //     );
 
-        // Sample Logic //
+    //     // Sample Logic //
 
-        ReducePointCommand command = new ReducePointCommand();
-        UserPoint.reducePoint(command);
-    }
+    //     ReducePointCommand command = new ReducePointCommand();
+    //     UserPoint.reducePoint(command);
+    // }
 }
 //>>> Clean Arch / Inbound Adaptor
