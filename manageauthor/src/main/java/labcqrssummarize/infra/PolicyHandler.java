@@ -2,14 +2,14 @@ package labcqrssummarize.infra;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.naming.NameParser;
-import javax.naming.NameParser;
 import javax.transaction.Transactional;
+
 import labcqrssummarize.config.kafka.KafkaProcessor;
 import labcqrssummarize.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 //<<< Clean Arch / Inbound Adaptor
@@ -19,6 +19,9 @@ public class PolicyHandler {
 
     @Autowired
     AuthorRepository authorRepository;
+
+    @Autowired
+    KafkaProcessor kafkaProcessor;
 
     // 기본 수신 핸들러(무시 가능)
     @StreamListener(KafkaProcessor.INPUT)
@@ -44,12 +47,20 @@ public class PolicyHandler {
 
         System.out.println("📝 콘텐츠 작성됨: " + event.toJson());
 
-        // 커맨드 객체 발행
-        WrittenContent command = new WrittenContent();
+        // 전자책 등록 Command 생성
+        EbookRegisterCommand command = new EbookRegisterCommand();
         command.setAuthorId(event.getAuthorId());
+        command.setTitle(event.getTitle());
         command.setContent(event.getContent());
+        // 요약, 카테고리, 가격은 기본값 또는 AI/후처리에서 설정
+        command.setSummary("요약 없음"); // 임시값, AI 컨텍스트에서 후처리
+        command.setCategory("기타");
+        command.setPrice(0);
 
-        command.publish();
+        // 메시지 발행 (전자책 시스템으로)
+        kafkaProcessor.output().send(
+                MessageBuilder.withPayload(command).build()
+        );
     }
 
     // 3. 출간 요청됨 → RequestPublish 이벤트 처리
@@ -59,9 +70,10 @@ public class PolicyHandler {
 
         System.out.println("📤 출간 요청됨: " + event.toJson());
 
-        RequestPublish command = new RequestPublish();
+        RequestPublishCommand command = new RequestPublishCommand();
         command.setAuthorId(event.getAuthorId());
         command.setEbookId(event.getEbookId());
+        command.setTitle(event.getTitle());
 
         command.publish();
     }
@@ -80,15 +92,14 @@ public class PolicyHandler {
         command.publish();
     }
 
-    // 5. 전자책 비공개 요청됨 → 작가 시스템은 이 이벤트를 그냥 수신만 하면 됨
+    // 5. 전자책 비공개 요청 수신
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverListOutEbookRequested(@Payload ListOutEbookRequested event) {
         if (!event.validate()) return;
 
         System.out.println("🚫 전자책 비공개 요청 수신됨: " + event.toJson());
 
-        // 작가관리 시스템에선 별도로 처리할 로직 없음
-        // 전자책 비공개 처리는 서재 플랫폼 Bounded Context에서 수행
+        // 작가관리 시스템에서 따로 처리할 로직 없음
     }
 }
 //>>> Clean Arch / Inbound Adaptor

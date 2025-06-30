@@ -11,13 +11,15 @@ import lombok.*;
 @ToString
 public class WrittenContent extends AbstractEvent {
 
-    private Stirng ebookId;
     private String authorId;
-    private Boolean isApproved;
+    private String title;
+    private String content;
 
     public WrittenContent(Author aggregate) {
         super(aggregate);
-        this.id = aggregate.getEbookId();
+        this.authorId = aggregate.getUserId();  // Author에서 userId가 authorId 의미로 사용
+        this.title = "제목 없음";               // 기본값 (원하는 경우 event에서 재설정)
+        this.content = "내용 없음";             // 기본값
     }
 
     public WrittenContent() {

@@ -11,9 +11,9 @@ import lombok.*;
 @ToString
 public class RegisteredAuthor extends AbstractEvent {
 
-    private String authorId;
-    private Boolean isApproved;
-    private String userId;
+    private String authorId;      // 작가 ID
+    private Boolean isApproved;   // 승인 여부 (기본: false)
+    private String userId;        // 유저 ID
 
     public RegisteredAuthor(Author aggregate) {
         super(aggregate);

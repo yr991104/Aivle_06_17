@@ -11,15 +11,15 @@ import lombok.*;
 @ToString
 public class RequestPublish extends AbstractEvent {
 
-    private Long id;
+    private Long ebookId;
     private String authorId;
-    private Boolean isApproved;
+    private String title;
 
-    public RequestPublish(Author aggregate) {
+    public RequestPublish(Ebook aggregate) {
         super(aggregate);
-        this.id = aggregate.getId();
-        this.authorId = aggregate.getauthorId();
-        this.isApproved = aggregate.getisApproved();
+        this.ebookId = aggregate.getId();
+        this.authorId = aggregate.getAuthorId();
+        this.title = aggregate.getTitle();
     }
 
     public RequestPublish() {
