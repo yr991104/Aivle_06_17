@@ -115,6 +115,11 @@ public class Subscriber {
         this.membershipType     = MembershipType.KT;
         repository().save(this);
         new MembershipRequested(this).publishAfterCommit();
+    }
+    public void requestOpenEBook(RequestOpenEBookCommand cmd) {
+        // 단순히 이벤트 발행
+        new RequestOpenEBookAccept(this, cmd.getEbookId())
+            .publishAfterCommit();
     }    
 
     public static SubscriberRepository repository() {

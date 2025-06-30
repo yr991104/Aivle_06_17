@@ -13,6 +13,7 @@ import labcqrssummarize.domain.Subscriber;
 import labcqrssummarize.domain.SubscriberRepository;
 import labcqrssummarize.domain.RegisterMembershipCommand;
 import labcqrssummarize.domain.LoginCommand;
+import labcqrssummarize.domain.RequestOpenEBookCommand;
 
 @RestController
 @RequestMapping("/subscribers")
@@ -75,5 +76,22 @@ public class SubscriberController {
         s.requestMembership(new RegisterMembershipCommand());
         return ResponseEntity.ok(s);
     }
+
+    @PostMapping("/{id}/open")
+    public ResponseEntity<Void> requestOpenEBook(
+            @PathVariable String id,
+            @RequestBody RequestOpenEBookCommand cmd
+    ) {
+        Subscriber s = subscriberRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        // 명시적으로 ID/상태 보강
+        cmd.setSubscriberId(id);
+        cmd.setUserId(s.getUserId());
+        cmd.setSubscriptionStatus(s.getSubscriptionStatus());
+
+        s.requestOpenEBook(cmd);
+        return ResponseEntity.ok().build();
+    }    
+    
 }
 //>>> Clean Arch / Inbound Adaptor
