@@ -1,12 +1,12 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDate;
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
+import javax.persistence.Enumerated;
+import javax.persistence.EnumType;
 
-//<<< DDD / Domain Event
+// <<< DDD / Domain Event
 @Data
 @ToString
 public class RequestOpenEBookAccept extends AbstractEvent {
@@ -14,8 +14,12 @@ public class RequestOpenEBookAccept extends AbstractEvent {
     private String subscriberId;
     private String userId;
     private ViewHistory viewHistory;
-    private membershipType membershipType;
-    private subscriptionStatus subscriptionStatus;
+
+    @Enumerated(EnumType.STRING)
+    private MembershipType membershipType;
+
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus subscriptionStatus;
 
     public RequestOpenEBookAccept(Subscriber aggregate) {
         super(aggregate);
@@ -25,4 +29,5 @@ public class RequestOpenEBookAccept extends AbstractEvent {
         super();
     }
 }
+
 //>>> DDD / Domain Event
