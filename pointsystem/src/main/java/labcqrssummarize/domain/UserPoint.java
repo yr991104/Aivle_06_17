@@ -27,11 +27,14 @@ public class UserPoint {
 
     @PostPersist
     public void onPostPersist() {
-        ReducedPoint reducedPoint = new ReducedPoint(this);
-        reducedPoint.publishAfterCommit();
-
         GivenPoint givenPoint = new GivenPoint(this);
         givenPoint.publishAfterCommit();
+    }
+
+    @PreUpdate
+    public void onPreUpdate() {
+        ReducedPoint reducedPoint = new ReducedPoint(this);
+        reducedPoint.publishAfterCommit();
     }
 
     public static UserPointRepository repository() {

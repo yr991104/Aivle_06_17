@@ -26,8 +26,10 @@
                         <tr>
                         <th>Id</th>
                         <th>Ebooks</th>
-                        <th>AiGeneratedCover</th>
                         <th>RegisteredAt</th>
+                        <th>CoverImage</th>
+                        <th>Summary</th>
+                        <th>Prices</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,8 +40,10 @@
                         >
                             <td class="font-semibold">{{ idx + 1 }}</td>
                             <td class="whitespace-nowrap" label="Ebooks">{{ val.ebooks }}</td>
-                            <td class="whitespace-nowrap" label="AiGeneratedCover">{{ val.aiGeneratedCover }}</td>
                             <td class="whitespace-nowrap" label="RegisteredAt">{{ val.registeredAt }}</td>
+                            <td class="whitespace-nowrap" label="CoverImage">{{ val.coverImage }}</td>
+                            <td class="whitespace-nowrap" label="Summary">{{ val.summary }}</td>
+                            <td class="whitespace-nowrap" label="Prices">{{ val.prices }}</td>
                             <v-row class="ma-0 pa-4 align-center">
                                 <v-spacer></v-spacer>
                                 <Icon style="cursor: pointer;" icon="mi:delete" @click="deleteRow(val)" />
@@ -103,8 +107,10 @@
                         <div>
                             <Number label="Pid" v-model="selectedRow.pid" :editMode="true"/>
                             <String label="Ebooks" v-model="selectedRow.ebooks" :editMode="true"/>
-                            <String label="AiGeneratedCover" v-model="selectedRow.aiGeneratedCover" :editMode="true"/>
                             <Date label="RegisteredAt" v-model="selectedRow.registeredAt" :editMode="true"/>
+                            <String label="CoverImage" v-model="selectedRow.coverImage" :editMode="true"/>
+                            <String label="Summary" v-model="selectedRow.summary" :editMode="true"/>
+                            <Number label="Prices" v-model="selectedRow.prices" :editMode="true"/>
                             <v-divider class="border-opacity-100 my-divider"></v-divider>
                             <v-layout row justify-end>
                                 <v-btn

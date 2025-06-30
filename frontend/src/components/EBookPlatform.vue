@@ -10,14 +10,24 @@
             v-model="value.ebooks"
             :editMode="editMode"
         />
-        <String
-            label="AiGeneratedCover"
-            v-model="value.aiGeneratedCover"
-            :editMode="editMode"
-        />
         <Date
             label="RegisteredAt"
             v-model="value.registeredAt"
+            :editMode="editMode"
+        />
+        <String
+            label="CoverImage"
+            v-model="value.coverImage"
+            :editMode="editMode"
+        />
+        <String
+            label="Summary"
+            v-model="value.summary"
+            :editMode="editMode"
+        />
+        <Number
+            label="Prices"
+            v-model="value.prices"
             :editMode="editMode"
         />
         <v-row class="ma-0 pa-0">

@@ -41,5 +41,25 @@ public class PolicyHandler {
         GivePointCommand command = new GivePointCommand();
         UserPoint.givePoint(command);
     }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='HandleEBookViewed'"
+    )
+    public void wheneverHandleEBookViewed_ReducePointRequested(
+        @Payload HandleEBookViewed handleEBookViewed
+    ) {
+        HandleEBookViewed event = handleEBookViewed;
+        System.out.println(
+            "\n\n##### listener ReducePointRequested : " +
+            handleEBookViewed +
+            "\n\n"
+        );
+
+        // Sample Logic //
+
+        ReducePointCommand command = new ReducePointCommand();
+        UserPoint.reducePoint(command);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

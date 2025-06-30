@@ -1,7 +1,7 @@
 # 
 
 ## Model
-www.msaez.io/#/56510688/storming/labcqrs-231022
+www.msaez.io/#/163964407/storming/labcqrs-2310223
 
 ## Before Running Services
 ### Make sure there is a Kafka server running
@@ -46,7 +46,7 @@ mvn spring-boot:run
 ```
 - ebookplatform
 ```
- http :8088/eBookPlatforms pid="pid"ebooks="ebooks"aiGeneratedCover="aiGeneratedCover"registeredAt="registeredAt"
+ http :8088/eBookPlatforms pid="pid"ebooks="ebooks"registeredAt="registeredAt"coverImage="coverImage"summary="summary"prices="prices"
 ```
 - subscriber
 ```

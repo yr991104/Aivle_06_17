@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.AdminsystemApplication;
 import labcqrssummarize.domain.RequestContentApporved;
+import labcqrssummarize.domain.RequestContentDenied;
 import labcqrssummarize.domain.RequestPublishApproved;
 import labcqrssummarize.domain.RequestPublishDenied;
 import lombok.Data;
@@ -40,8 +41,8 @@ public class EBook {
 
     private publicationStatus publicationStatus;
 
-    @PostPersist
-    public void onPostPersist() {
+    @PreUpdate
+    public void onPreUpdate() {
         RequestContentApporved requestContentApporved = new RequestContentApporved(
             this
         );
@@ -56,6 +57,11 @@ public class EBook {
             this
         );
         requestPublishDenied.publishAfterCommit();
+
+        RequestContentDenied requestContentDenied = new RequestContentDenied(
+            this
+        );
+        requestContentDenied.publishAfterCommit();
     }
 
     public static EBookRepository repository() {

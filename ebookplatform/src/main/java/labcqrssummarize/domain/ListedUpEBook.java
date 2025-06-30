@@ -13,7 +13,7 @@ public class ListedUpEBook extends AbstractEvent {
 
     private Integer pid;
     private String ebooks;
-    private String aiGeneratedCover;
+    private String coverImage;
     private Date registeredAt;
 
     public ListedUpEBook(EBookPlatform aggregate) {
