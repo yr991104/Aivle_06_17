@@ -23,8 +23,6 @@ public class UserPoint {
 
     private Integer point;
 
-    private PointHistory pointHistory;
-
     @PostPersist
     public void onPostPersist() {
         GivenPoint givenPoint = new GivenPoint(this);
