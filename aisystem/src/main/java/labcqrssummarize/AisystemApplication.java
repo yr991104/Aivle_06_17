@@ -19,14 +19,3 @@ public class AisystemApplication {
             SpringApplication.run(AisystemApplication.class, args);
     }
 }
-
-    // ✅ 테스트용 GPT 호출 실행
-    @Bean
-    public CommandLineRunner testGpt(GptClient gptClient) {
-        return args -> {
-            String prompt = "간단한 테스트 질문입니다. 오늘 날씨 어때요?";
-            String result = gptClient.callGpt(prompt);
-            System.out.println("✅ GPT 응답 결과:\n" + result);
-        };
-    }
-}
