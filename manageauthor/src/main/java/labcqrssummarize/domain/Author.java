@@ -22,12 +22,14 @@ import lombok.Data;
 public class Author {
 
     @Id
-    private String authorId;    // 작가 고유 ID (PK)
-
+    private Long id;
+    private String authorId;
     private String name;        // 작가 이름
     private Boolean isApproved; // 관리자 승인 여부
     private String ebooks;      // 등록된 전자책 ID들
     private String userId;      // 작가 계정의 유저 ID
+    private String ebookId;
+
 
     // 1. 작가 등록 시점에 실행될 이벤트 발행
     @PostPersist

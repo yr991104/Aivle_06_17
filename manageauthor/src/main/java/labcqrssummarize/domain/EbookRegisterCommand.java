@@ -19,6 +19,7 @@ public class EbookRegisterCommand {
     private String content;    // 전자책 본문 내용
     private String category;   // 기본값: "기타"
     private int price;         // 기본값: 0
+    private String summary;    // 요약 내용
 
     // 요약은 추후 AI 컨텍스트에서 생성 예정 (summary 필드는 생략)
 }

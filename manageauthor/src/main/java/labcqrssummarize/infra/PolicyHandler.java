@@ -58,7 +58,7 @@ public class PolicyHandler {
         command.setPrice(0);
 
         // 메시지 발행 (전자책 시스템으로)
-        kafkaProcessor.output().send(
+        kafkaProcessor.outboundTopic().send(
                 MessageBuilder.withPayload(command).build()
         );
     }
@@ -75,7 +75,7 @@ public class PolicyHandler {
         command.setEbookId(event.getEbookId());
         command.setTitle(event.getTitle());
 
-        command.publish();
+        new AbstractEvent(command).publish();
     }
 
     // 4. 출간 요청 취소됨 → RequestPublishCanceled 이벤트 처리

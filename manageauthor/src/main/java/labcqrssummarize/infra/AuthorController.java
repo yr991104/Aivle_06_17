@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.http.*;
-import org.springframework.transaction.annotation.Transactional;
 
 //<<< Clean Arch / Inbound Adaptor
 
@@ -41,6 +40,8 @@ public class AuthorController {
     @NoArgsConstructor
     static class RequestPublishRequest {
         private String authorId;
+        private Long ebookId;
+        private Boolean isApproved;
     }
 
     @Data
@@ -51,6 +52,7 @@ public class AuthorController {
 
     @Autowired
     AuthorRepository authorRepository;
+    EbookRepository ebookRepository;
 
     @PostMapping("/authors")
     public ResponseEntity<Void> registerAuthor(@RequestBody RegisterAuthorRequest request) {
@@ -75,7 +77,7 @@ public class AuthorController {
     public ResponseEntity<Void> writeContent(@RequestBody WriteContentRequest request) {
         // 1. Author 조회
         Author author = authorRepository.findById(request.getAuthorId())
-                .orElseThrows(() -> new RuntimeException("해당 작가를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("해당 작가를 찾을 수 없습니다."));
 
         // 2. 콘텐츠 작성 이벤트 생성 및 발행
         WrittenContent event = new WrittenContent();
@@ -89,10 +91,15 @@ public class AuthorController {
 
     @PostMapping("/request-publish")
     public ResponseEntity<Void> requestPublish(@RequestBody RequestPublishRequest request) {
+
         Author author = authorRepository.findById(request.getAuthorId())
                 .orElseThrow(() -> new RuntimeException("해당 작가를 찾을 수 없습니다."));
 
-        RequestPublish event = new RequestPublish(author);
+        Ebook ebook = ebookRepository.findById(request.getEbookId())
+                .orElseThrow(() -> new RuntimeException("해당 전자책을 찾을 수 없습니다."));
+
+        RequestPublish event = new RequestPublish(ebook);
+
         event.setAuthorId(author.getAuthorId());
         event.setIsApproved(author.getIsApproved());
 

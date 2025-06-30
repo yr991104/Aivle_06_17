@@ -14,6 +14,7 @@ public class RequestPublish extends AbstractEvent {
     private Long ebookId;
     private String authorId;
     private String title;
+    private Boolean isApproved;
 
     public RequestPublish(Ebook aggregate) {
         super(aggregate);
