@@ -33,13 +33,26 @@ public class PolicyHandler {
             "\n\n##### listener CheckMembership : " + signedUp + "\n\n"
         );
 
-        // Comments //
-        //KT 멤버쉽 가입했는지 확인
-
-        // Sample Logic //
-
-        GivePointCommand command = new GivePointCommand();
-        UserPoint.givePoint(command);
+        // 멤버십 타입에 따른 포인트 지급
+        Integer pointsToGive = 0;
+        String description = "";
+        
+        if ("KT".equals(event.getMembershipType())) {
+            pointsToGive = 5000;
+            description = "KT membership signup bonus";
+        } else if ("NORMAL".equals(event.getMembershipType())) {
+            pointsToGive = 1000;
+            description = "Normal membership signup bonus";
+        }
+        
+        if (pointsToGive > 0) {
+            GivePointCommand command = new GivePointCommand();
+            command.setUserId(event.getUserId());
+            command.setPoint(pointsToGive);
+            command.setDescription(description);
+            
+            UserPoint.givePoint(command);
+        }
     }
 
     @StreamListener(
@@ -56,10 +69,11 @@ public class PolicyHandler {
             "\n\n"
         );
 
-        // Sample Logic //
-
-        ReducePointCommand command = new ReducePointCommand();
-        UserPoint.reducePoint(command);
+        // 이 이벤트는 Kafka를 통해 들어오는 것이므로, 
+        // 실제 포인트 차감은 REST API를 통해 처리됩니다.
+        // 여기서는 로깅만 수행합니다.
+        System.out.println("EBook viewed event received for user: " + event.getUserId() + 
+                          ", ebook: " + event.getEbookId() + ", price: " + event.getPrice());
     }
 }
 //>>> Clean Arch / Inbound Adaptor

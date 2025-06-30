@@ -48,6 +48,7 @@ logging:
 api:
   url: 
     pointsystem: localhost:8087 
+    subscriber: localhost:8081
     
 
 server:
@@ -88,5 +89,6 @@ spring:
 api:
   url: 
     pointsystem: pointsystem:8080 
+    subscriber: subscriber:8080
     
 
