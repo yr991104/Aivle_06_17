@@ -22,40 +22,29 @@ import lombok.Data;
 public class Author {
 
     @Id
-    private String authorId;
+    private String authorId; // 작가 고유 ID(PK)
 
-    private String name;
-    private Boolean isApproved;
-    private String ebooks;
-    private String userId;
+    private String name; // 작가 이름
+    private Boolean isApproved; // 관리자 승인 여부
+    private String ebooks; // 등록된 전자책 ID들
+    private String userId; // 작가 계정의 유저 ID
 
+    // 1. 작가 등록 시점에만 호출됨
     @PostPersist
     public void onPostPersist() {
         RegisteredAuthor registeredAuthor = new RegisteredAuthor(this);
         registeredAuthor.publishAfterCommit();
-
-        RequestPublish requestPublish = new RequestPublish(this);
-        requestPublish.publishAfterCommit();
-
-        RequestPublishCanceled requestPublishCanceled = new RequestPublishCanceled(
-            this
-        );
-        requestPublishCanceled.publishAfterCommit();
     }
 
+    // 2. 전자책 비공개 요청은 수정(update) 시 발생 가능
     @PreUpdate
     public void onPreUpdate() {
-        ListOutEbookRequested listOutEbookRequested = new ListOutEbookRequested(
-            this
-        );
+        ListOutEbookRequested listOutEbookRequested = new ListOutEbookRequested(this);
         listOutEbookRequested.publishAfterCommit();
     }
 
     public static AuthorRepository repository() {
-        AuthorRepository authorRepository = ManageauthorApplication.applicationContext.getBean(
-            AuthorRepository.class
-        );
-        return authorRepository;
+        return ManageauthorApplication.applicationContext.getBean(AuthorRepository.class);
     }
 }
 //>>> DDD / Aggregate Root
