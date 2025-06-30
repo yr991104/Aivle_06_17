@@ -1,12 +1,11 @@
-import { useNavigate } from 'react-router-dom';
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import AppBar from '../components/AppBar';
 import Footer from '../components/Footer';
 
 const MainPage = () => {
   const navigate = useNavigate();
 
-  // 각 버튼 클릭 시 경로 설정
   const handleNavigation = (label) => {
     switch (label) {
       case 'Author Management':
