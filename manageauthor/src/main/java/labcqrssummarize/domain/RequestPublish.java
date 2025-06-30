@@ -12,9 +12,14 @@ import lombok.*;
 public class RequestPublish extends AbstractEvent {
 
     private Long id;
+    private String authorId;
+    private Boolean isApproved;
 
     public RequestPublish(Author aggregate) {
         super(aggregate);
+        this.id = aggregate.getId();
+        this.authorId = aggregate.getauthorId();
+        this.isApproved = aggregate.getisApproved();
     }
 
     public RequestPublish() {

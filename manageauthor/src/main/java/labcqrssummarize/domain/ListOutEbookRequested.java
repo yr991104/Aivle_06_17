@@ -15,6 +15,8 @@ public class ListOutEbookRequested extends AbstractEvent {
 
     public ListOutEbookRequested(Author aggregate) {
         super(aggregate);
+        // 작가의 전자책 ID를 설정
+        this.eBookId = aggregate.getEbookId();
     }
 
     public ListOutEbookRequested() {

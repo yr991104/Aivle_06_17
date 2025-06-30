@@ -25,20 +25,14 @@ public class Author {
     private String authorId;
 
     private String name;
-
     private Boolean isApproved;
-
     private String ebooks;
-
     private String userId;
 
     @PostPersist
     public void onPostPersist() {
         RegisteredAuthor registeredAuthor = new RegisteredAuthor(this);
         registeredAuthor.publishAfterCommit();
-
-        WrittenContent writtenContent = new WrittenContent(this);
-        writtenContent.publishAfterCommit();
 
         RequestPublish requestPublish = new RequestPublish(this);
         requestPublish.publishAfterCommit();
