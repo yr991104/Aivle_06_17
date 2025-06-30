@@ -12,6 +12,7 @@ import labcqrssummarize.domain.RegisterSubscriptionCommand;
 import labcqrssummarize.domain.Subscriber;
 import labcqrssummarize.domain.SubscriberRepository;
 import labcqrssummarize.domain.RegisterMembershipCommand;
+import labcqrssummarize.domain.LoginCommand;
 
 @RestController
 @RequestMapping("/subscribers")
@@ -29,6 +30,13 @@ public class SubscriberController {
         return ResponseEntity
             .status(HttpStatus.CREATED)
             .body(created);
+    }
+    @PostMapping("/login")
+    public ResponseEntity<Subscriber> login(
+        @RequestBody LoginCommand cmd
+    ){
+        Subscriber loggedIn= Subscriber.login(cmd);
+        return ResponseEntity.ok(loggedIn);
     }
 
     @PostMapping("/{id}/subscribe")

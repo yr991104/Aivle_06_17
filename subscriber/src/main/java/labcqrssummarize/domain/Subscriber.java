@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import java.util.Optional;
 
 import labcqrssummarize.SubscriberApplication;
 import lombok.Data;
@@ -45,19 +48,43 @@ public class Subscriber {
     protected Subscriber() {}
 
     //<<< Clean Arch / Port Method
-    //회원 가입 처리
+    //회원가입
     public static Subscriber registerSubscriber(RegisterSubscriberCommand cmd) {
+        // 중복 userId 체크 오류 메세지 추후 수정 예정
+        Optional<Subscriber> existing = repository().findByUserId(cmd.getUserId());
+        if (existing.isPresent()) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "이미 사용중인 id 입니다."
+            );
+        }
         Subscriber subscriber = new Subscriber();
-
         subscriber.subscriberId     = UUID.randomUUID().toString();
         subscriber.userId           = cmd.getUserId();
         subscriber.password         = cmd.getPassword();
         subscriber.email            = cmd.getEmail();
-        subscriber.subscriptionType = cmd.getSubscriptionType(); 
-
+        subscriber.subscriptionType = cmd.getSubscriptionType();
         repository().save(subscriber);
         new SignedUp(subscriber).publishAfterCommit();
         return subscriber;
+    }
+
+    /*로그인 메서드
+     * 로그인 실패 시 message가 안떠서 추후 수정 예
+     */
+    public static Subscriber login(LoginCommand cmd) {
+        Subscriber s = repository()
+            .findByUserId(cmd.getUserId())
+            .orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "아이디가 올바르지 않습니다."
+            ));
+        if (!s.getPassword().equals(cmd.getPassword())) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."
+            );
+        }
+        new LoggedIn(s).publishAfterCommit();
+        return s;
     }
 
     //<<< Clean Arch / Port Method
