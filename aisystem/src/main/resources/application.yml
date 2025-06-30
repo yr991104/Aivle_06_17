@@ -45,6 +45,10 @@ logging:
     org.hibernate.type: trace
     org.springframework.cloud: debug
 
+api:
+  url: 
+    aisystem: localhost:8086 
+    
 
 server:
   port: 8086
@@ -81,4 +85,8 @@ spring:
           destination: labcqrssummarize
           contentType: application/json
 
+api:
+  url: 
+    aisystem: aisystem:8080 
+    
 

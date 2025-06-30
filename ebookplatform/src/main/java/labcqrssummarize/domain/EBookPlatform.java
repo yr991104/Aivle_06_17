@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.EbookplatformApplication;
+import labcqrssummarize.domain.HandleEBookViewFailed;
+import labcqrssummarize.domain.HandleEBookViewed;
 import labcqrssummarize.domain.ListOutEBook;
 import labcqrssummarize.domain.ListedUpEBook;
 import lombok.Data;
@@ -23,15 +25,30 @@ public class EBookPlatform {
 
     private String ebooks;
 
-    private String aiGeneratedCover;
-
     private Date registeredAt;
+
+    private String coverImage;
+
+    private String summary;
+
+    private Integer prices;
 
     @PostPersist
     public void onPostPersist() {
         ListedUpEBook listedUpEBook = new ListedUpEBook(this);
         listedUpEBook.publishAfterCommit();
 
+        HandleEBookViewed handleEBookViewed = new HandleEBookViewed(this);
+        handleEBookViewed.publishAfterCommit();
+
+        HandleEBookViewFailed handleEBookViewFailed = new HandleEBookViewFailed(
+            this
+        );
+        handleEBookViewFailed.publishAfterCommit();
+    }
+
+    @PreUpdate
+    public void onPreUpdate() {
         ListOutEBook listOutEBook = new ListOutEBook(this);
         listOutEBook.publishAfterCommit();
     }

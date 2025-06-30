@@ -42,11 +42,6 @@ public class Author {
 
         RequestPublish requestPublish = new RequestPublish(this);
         requestPublish.publishAfterCommit();
-
-        RequestPublishCanceled requestPublishCanceled = new RequestPublishCanceled(
-            this
-        );
-        requestPublishCanceled.publishAfterCommit();
     }
 
     @PreUpdate
@@ -55,6 +50,11 @@ public class Author {
             this
         );
         listOutEbookRequested.publishAfterCommit();
+
+        RequestPublishCanceled requestPublishCanceled = new RequestPublishCanceled(
+            this
+        );
+        requestPublishCanceled.publishAfterCommit();
     }
 
     public static AuthorRepository repository() {

@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.persistence.*;
 import labcqrssummarize.SubscriberApplication;
 import labcqrssummarize.domain.MembershipRequested;
+import labcqrssummarize.domain.RequestOpenEBookAccept;
 import labcqrssummarize.domain.SignedUp;
 import labcqrssummarize.domain.SubscribeCanceled;
 import labcqrssummarize.domain.SubscribeRequested;
@@ -55,6 +56,11 @@ public class Subscriber {
 
         MembershipRequested membershipRequested = new MembershipRequested(this);
         membershipRequested.publishAfterCommit();
+
+        RequestOpenEBookAccept requestOpenEBookAccept = new RequestOpenEBookAccept(
+            this
+        );
+        requestOpenEBookAccept.publishAfterCommit();
     }
 
     public static SubscriberRepository repository() {

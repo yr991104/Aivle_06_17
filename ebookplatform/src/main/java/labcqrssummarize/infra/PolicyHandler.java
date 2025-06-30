@@ -82,5 +82,45 @@ public class PolicyHandler {
         // Sample Logic //
 
     }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='ListOutEbookRequested'"
+    )
+    public void wheneverListOutEbookRequested_RequestPrivateStatus(
+        @Payload ListOutEbookRequested listOutEbookRequested
+    ) {
+        ListOutEbookRequested event = listOutEbookRequested;
+        System.out.println(
+            "\n\n##### listener RequestPrivateStatus : " +
+            listOutEbookRequested +
+            "\n\n"
+        );
+
+        // Sample Logic //
+
+        ListOutEBookCommand command = new ListOutEBookCommand();
+        EBookPlatform.listOutEBook(command);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestOpenEBookAccept'"
+    )
+    public void wheneverRequestOpenEBookAccept_RequestOpenEBook(
+        @Payload RequestOpenEBookAccept requestOpenEBookAccept
+    ) {
+        RequestOpenEBookAccept event = requestOpenEBookAccept;
+        System.out.println(
+            "\n\n##### listener RequestOpenEBook : " +
+            requestOpenEBookAccept +
+            "\n\n"
+        );
+
+        // Sample Logic //
+
+        OpenEBookCommand command = new OpenEBookCommand();
+        EBookPlatform.openEBook(command);
+    }
 }
 //>>> Clean Arch / Inbound Adaptor

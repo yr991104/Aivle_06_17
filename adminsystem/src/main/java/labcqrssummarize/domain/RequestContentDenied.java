@@ -9,18 +9,17 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class ListedUpEBook extends AbstractEvent {
+public class RequestContentDenied extends AbstractEvent {
 
-    private Integer pid;
-    private String ebooks;
-    private String coverImage;
-    private Date registeredAt;
+    private String ebookId;
+    private publicationStatus publicationStatus;
+    private String authorId;
 
-    public ListedUpEBook(EBookPlatform aggregate) {
+    public RequestContentDenied(EBook aggregate) {
         super(aggregate);
     }
 
-    public ListedUpEBook() {
+    public RequestContentDenied() {
         super();
     }
 }
