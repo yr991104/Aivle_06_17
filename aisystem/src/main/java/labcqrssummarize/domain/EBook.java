@@ -1,10 +1,10 @@
 package labcqrssummarize.domain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.PostPersist;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.PostPersist;
 import labcqrssummarize.AisystemApplication;
 import labcqrssummarize.external.GptClient;
 import labcqrssummarize.infra.ApplicationContextProvider;
