@@ -1,3 +1,4 @@
+// src/pages/MainPage.jsx
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppBar from '../components/AppBar';
@@ -6,36 +7,21 @@ import Footer from '../components/Footer';
 const MainPage = () => {
   const navigate = useNavigate();
 
-  const handleNavigation = (label) => {
-    switch (label) {
-      case 'Author Management':
-        navigate('/author');
-        break;
-      case 'Administrator System':
-        navigate('/admin');
-        break;
-      case 'Library Platform':
-        navigate('/library');
-        break;
-      case 'AI System':
-        navigate('/aisystem');
-        break;
-      case 'Subscriber System':
-        navigate('/subscriber');
-        break;
-      case 'Point System':
-        navigate('/points');
-        break;
-      default:
-        break;
-    }
-  };
+  const dashboardItems = [
+    { label: 'Author Management', route: '/author' },
+    { label: 'Administrator System', route: '/admin' },
+    { label: 'Library Platform', route: '/library' },
+    { label: 'AI System', route: '/aisystem' },
+    { label: 'Subscriber System', route: '/subscriber' }, // ✅ 추가됨
+    { label: 'Point System', route: '/points' },
+  ];
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans">
       <AppBar />
       <main className="flex-grow px-40 py-10 flex justify-center">
         <div className="max-w-[960px] w-full flex flex-col items-center gap-6">
+          {/* 상단 배너 */}
           <div
             className="min-h-[480px] flex flex-col gap-6 bg-cover bg-center bg-no-repeat items-center justify-center p-4 rounded-lg text-white text-center"
             style={{
@@ -47,30 +33,21 @@ const MainPage = () => {
             <h2 className="text-base font-normal">
               Manage your e-books efficiently with our microservice architecture platform. Choose your role to get started.
             </h2>
-            <button className="bg-[#0c7ff2] text-white font-bold px-5 py-3 rounded-lg">Explore Features</button>
+            <button className="bg-[#0c7ff2] text-white font-bold px-5 py-3 rounded-lg">
+              Explore Features
+            </button>
           </div>
 
+          {/* 역할별 대시보드 */}
           <h2 className="text-[22px] font-bold text-[#111418] mt-10">Role-Specific Dashboards</h2>
-          <div className="flex flex-col items-stretch gap-3 max-w-[480px] w-full">
-            {['Author Management', 'Administrator System', 'Library Platform', 'AI System'].map((role) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-[480px] w-full">
+            {dashboardItems.map(({ label, route }) => (
               <button
-                key={role}
-                onClick={() => handleNavigation(role)}
+                key={label}
+                onClick={() => navigate(route)}
                 className="bg-[#0c7ff2] text-white font-bold h-10 px-4 rounded-lg"
               >
-                {role}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-3 justify-center max-w-[480px] w-full">
-            {['Subscriber System', 'Point System'].map((role) => (
-              <button
-                key={role}
-                onClick={() => handleNavigation(role)}
-                className="bg-[#0c7ff2] text-white font-bold h-10 px-4 rounded-lg flex-grow"
-              >
-                {role}
+                {label}
               </button>
             ))}
           </div>
