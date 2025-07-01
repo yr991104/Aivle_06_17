@@ -27,10 +27,10 @@ public class RequestOpenEBookAccept extends AbstractEvent {
         this.ebookId            = ebookId;
     }
 
-    
     public RequestOpenEBookAccept() {
         super();
     }
 }
+
 
 //>>> DDD / Domain Event

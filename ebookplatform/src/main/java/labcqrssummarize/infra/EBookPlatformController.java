@@ -89,4 +89,10 @@ public class EBookPlatformController {
         EBookPlatform eBook = optionalEBook.get();
         return "전자책 상태: " + eBook.getStatus();
     }
+    //테스트 용도
+    @PostMapping("/ebooks")
+    public EBookPlatform createEBook(@RequestBody EBookPlatform ebook) {
+        return eBookPlatformRepository.save(ebook);
+    }
+    
 }

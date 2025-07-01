@@ -6,8 +6,8 @@ import lombok.Data;
 public class PointDeductionResponse {
     private String userId;
     private String ebookId;
-    private Integer deductedPoint;
-    private Integer remainingPoint;
-    private String message;
+    private int deductedPoint;
+    private int remainingPoint;
+    private String message = "";
     private boolean success;
-} 
+}

@@ -1,8 +1,5 @@
 package labcqrssummarize.infra;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import javax.naming.NameParser;
 import javax.transaction.Transactional;
 import labcqrssummarize.config.kafka.KafkaProcessor;
 import labcqrssummarize.domain.*;
@@ -10,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import labcqrssummarize.domain.SubscriptionStatus;
 
-import java.util.Date;
-
-//<<< Clean Arch / Inbound Adaptor
 @Service
 @Transactional
 public class PolicyHandler {
@@ -34,13 +29,11 @@ public class PolicyHandler {
     ) {
         System.out.println("##### [GeneratedEBookCover] received: " + generatedEBookCover);
 
-        // EBookId 받아와서 저장소에서 찾기, 없다면 함수 종료
         EBookPlatform ebook = eBookPlatformRepository.findById(
             Integer.parseInt(generatedEBookCover.getEbookId())
         ).orElse(null);
         if (ebook == null) return;
         
-        // EBookPlatform 함수
         ebook.markCoverGenerated();
         if (ebook.isReadyForPublish()) {
             ebook.register();
@@ -105,7 +98,6 @@ public class PolicyHandler {
     ) {
         System.out.println("##### [ListOutEbookRequested] received: " + listOutEbookRequested);
 
-        // 삭제를 원하는 EBookId 받아오기
         Integer ebookId = Integer.parseInt(listOutEbookRequested.getEBookId());
 
         EBookPlatform ebook = eBookPlatformRepository.findById(ebookId).orElse(null);
@@ -114,14 +106,13 @@ public class PolicyHandler {
             return;
         }
 
-        // 상태 업데이트 및 저장
         ebook.updateStatus(EBookPlatform.EbookStatus.REMOVED);
         eBookPlatformRepository.save(ebook);
 
         System.out.println("전자책이 비공개 처리되었습니다. ID: " + ebookId);
     }
 
-    // 전자책 열람 요청
+    // 전자책 열람 요청 처리 (구독 상태 및 포인트 차감 처리)
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='RequestOpenEBookAccept'"
@@ -144,24 +135,47 @@ public class PolicyHandler {
             return;
         }
 
-        ebook.openEBook(requestOpenEBookAccept);
-        eBookPlatformRepository.save(ebook);
+        SubscriptionStatus subscriptionStatus = requestOpenEBookAccept.getSubscriptionStatus();
+
+        // 구독중이면 바로 열람 성공 처리
+        if (subscriptionStatus == SubscriptionStatus.SUBSCRIBED) {
+            ebook.openEBook(requestOpenEBookAccept);
+            eBookPlatformRepository.save(ebook);
+
+            HandleEBookViewed openedEvent = new HandleEBookViewed(ebook);
+            openedEvent.setUserId(requestOpenEBookAccept.getUserId());
+            openedEvent.publishAfterCommit();
+            return;
+        }
+
+        // 구독중이 아니면 포인트 차감 요청 이벤트 발행
+        int price = ebook.getPrice() != null ? ebook.getPrice() : 0;
+
+        DeductPoint deductPoint = new DeductPoint();
+        deductPoint.setUserId(requestOpenEBookAccept.getUserId());
+        deductPoint.setPoint(price);
+        deductPoint.setEbookId(requestOpenEBookAccept.getEbookId());
+        deductPoint.publishAfterCommit();
+
+        // 포인트 차감 성공/실패 이벤트 수신 후 별도 처리 필요
     }
 
-    // 아래 이벤트는 클래스 정의가 없으므로 안전하게 로그만 출력
+    // 전자책 열람 성공 이벤트 수신 로그
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='EBookPlatformOpened'"
+        condition = "headers['type']=='HandleEBookViewed'"
     )
-    public void wheneverEBookPlatformOpened_LogSuccess(@Payload String rawJson) {
-        System.out.println("<< 전자책 열람 성공 처리 >>: " + rawJson + "\n\n");
+    public void wheneverHandleEBookViewed_LogSuccess(@Payload HandleEBookViewed event) {
+        System.out.println("<< 전자책 열람 성공 처리 >>: " + event + "\n\n");
     }
 
+    // 전자책 열람 실패 이벤트 수신 로그
     @StreamListener(
         value = KafkaProcessor.INPUT,
-        condition = "headers['type']=='EBookPlatformOpenFailed'"
+        condition = "headers['type']=='HandleEBookViewFailed'"
     )
-    public void wheneverEBookPlatformRegistered_LogFail(@Payload String rawJson) {
-        System.out.println("<< 전자책 열람 실패 처리 >>: " + rawJson + "\n\n");
+    public void wheneverHandleEBookViewFailed_LogFail(@Payload HandleEBookViewFailed event) {
+        System.out.println("<< 전자책 열람 실패 처리 >>: " + event + "\n\n");
     }
 }
+

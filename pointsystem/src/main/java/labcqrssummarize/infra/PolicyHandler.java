@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import labcqrssummarize.domain.DeductPoint;
 
 @Service
 @Transactional
@@ -45,4 +46,38 @@ public class PolicyHandler {
 
         UserPoint.givePoint(command);
     }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='DeductPoint'"
+    )
+    public void wheneverDeductPoint_UsePoint(@Payload DeductPoint event) {
+        System.out.println("\n\n##### [포인트 시스템] DeductPoint 수신됨 : " + event + "\n\n");
+
+        if (event.getUserId() == null || event.getPoint() <= 0) {
+            System.out.println("[포인트 차감 실패] 이벤트 필드 누락 또는 잘못된 값: " + event);
+            return;
+        }
+
+        UserPoint userPoint = userPointRepository.findByUserId(event.getUserId()).orElse(null);
+        if (userPoint == null) {
+            System.out.println("[포인트 차감 실패] 해당 사용자 없음: " + event.getUserId());
+            return;
+        }
+
+        int currentPoint = userPoint.getPoint() == null ? 0 : userPoint.getPoint();
+
+        if (currentPoint < event.getPoint()) {
+            System.out.println("[포인트 차감 실패] 잔액 부족: 현재 포인트 " + currentPoint + ", 차감 요청 " + event.getPoint());
+            // 필요시 실패 이벤트 발행 등 추가 처리 가능
+            return;
+        }
+
+        userPoint.setPoint(currentPoint - event.getPoint());
+        userPointRepository.save(userPoint);
+
+        System.out.println("[포인트 차감 성공] 사용자: " + event.getUserId() + ", 차감액: " + event.getPoint());
+    }
 }
+
+
