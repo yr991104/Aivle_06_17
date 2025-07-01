@@ -100,4 +100,66 @@ sudo ./aws/install
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
 sudo mv /tmp/eksctl /usr/local/bin
 ```
-# 테스트 브랜치 feature/subscriber 입니다.
+
+
+# 서비스 기본 API 사용 가이드
+
+이 문서는 회원가입부터 포인트 조회, 전자책 등록, 열람, 포인트 재조회까지 전체 흐름에 대한 API 사용법을 안내합니다.
+
+---
+
+## 1. 회원가입
+
+- 사용자 아이디, 비밀번호, 이메일, 멤버십 타입(KT 혹은 일반)을 등록합니다.
+- 구독 타입은 포함하지 않습니다.
+
+### 요청 예시
+
+```bash
+curl -X POST http://localhost:8085/subscribers/register \
+-H "Content-Type: application/json" \
+-d '{
+  "userId": "testuser7",
+  "password": "password123",
+  "email": "testuser7@example.com",
+  "membershipType": "KT"
+}'
+```
+
+
+## 2. 포인트 조회
+```bash
+curl -X GET http://localhost:8087/userPoints/testuser7
+```
+
+
+## 3. 전자책 등록(테스트용)
+```bash
+curl -X POST http://localhost:8084/ebooks \
+-H "Content-Type: application/json" \
+-d '{
+    "pid": 1001,
+    "ebooks": ["Test Book Title"],
+    "coverImage": "http://example.com/image.png",
+    "summary": "This is a test summary",
+    "price": 3000
+}'
+```
+
+
+## 4. 전자책 열람요청
+```bash
+curl -X POST http://localhost:8085/subscribers/{subscriberId}/open \
+-H "Content-Type: application/json" \
+-d '{
+  "ebookId": "1001"
+}'
+```
+
+
+## 5.포인트 재조회
+```bash
+curl -X GET http://localhost:8087/userPoints/testuser7
+```
+
+
