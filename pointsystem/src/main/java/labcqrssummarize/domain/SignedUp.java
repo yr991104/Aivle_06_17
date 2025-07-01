@@ -1,20 +1,23 @@
 package labcqrssummarize.domain;
 
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
-import lombok.*;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @ToString
 public class SignedUp extends AbstractEvent {
 
-    private String userId;
-    private String subscriptionType;
-    private Object viewHistory;
-    private membershipType membershipType;
-    private Object subscriptionStatus;
-    private String password;
-    private Object email;
-    private String subscriberId;
+    private String subscriberId;     // 식별자
+    private String userId;           // 공통 ID
+    private String password;         // 사용 X (보안상 주의)
+    private String email;            // 사용 안 함
+    private SubscriptionType subscriptionType;
+    private MembershipType membershipType;
+    private SubscriptionStatus subscriptionStatus;
+
+    public SignedUp() {
+        super();
+    }
 }
+

@@ -1,6 +1,6 @@
 package labcqrssummarize.domain;
 
-public enum membershipType {
+public enum MembershipType {
     KT,
     NORMAL
 } 

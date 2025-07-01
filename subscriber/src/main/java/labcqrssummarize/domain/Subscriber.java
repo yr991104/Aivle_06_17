@@ -31,7 +31,6 @@ public class Subscriber {
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType = MembershipType.NORMAL;
 
-
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus subscriptionStatus = SubscriptionStatus.NONE;
 
@@ -64,6 +63,7 @@ public class Subscriber {
         subscriber.password         = cmd.getPassword();
         subscriber.email            = cmd.getEmail();
         subscriber.subscriptionType = cmd.getSubscriptionType();
+        subscriber.membershipType   = cmd.getMembershipType();  // <= 이 부분 추가!
         repository().save(subscriber);
         new SignedUp(subscriber).publishAfterCommit();
         return subscriber;
@@ -126,5 +126,6 @@ public class Subscriber {
         return SubscriberApplication.applicationContext.getBean(SubscriberRepository.class);
     }
 }
+
 
 

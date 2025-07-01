@@ -7,8 +7,6 @@ import javax.transaction.Transactional;
 import labcqrssummarize.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 //<<< Clean Arch / Inbound Adaptor
 
@@ -24,5 +22,12 @@ public class UserPointController {
     public PointDeductionResponse deductPoint(@RequestBody PointDeductionRequest request) {
         return UserPoint.deductPoint(request);
     }
+
+    // 포인트 지급 조회용
+    @GetMapping("/{userId}")
+    public UserPoint getUserPoint(@PathVariable String userId) {
+        return userPointRepository.findById(userId).orElse(null);
+    }
 }
+
 //>>> Clean Arch / Inbound Adaptor

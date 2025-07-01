@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class SubscriberStatusResponse {
     private String userId;
-    private subscriptionStatus subscriptionStatus;
+    private SubscriptionStatus subscriptionStatus;
     private boolean success;
     private String message;
-} 
+}
