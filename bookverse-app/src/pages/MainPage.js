@@ -18,7 +18,7 @@ const MainPage = () => {
         navigate('/library');
         break;
       case 'AI System':
-        navigate('/ai');
+        navigate('/aisystem');
         break;
       case 'Subscriber System':
         navigate('/subscriber');

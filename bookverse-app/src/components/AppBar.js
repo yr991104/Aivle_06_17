@@ -32,6 +32,12 @@ const AppBar = () => {
         >
           Signup
         </button>
+        <button
+          onClick={() => navigate('/aisystem')}
+          className="text-sm font-medium text-[#111418] hover:underline"
+        >
+          AI System
+        </button>
       </div>
     </header>
   );
