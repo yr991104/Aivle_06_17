@@ -10,9 +10,10 @@ import org.springframework.stereotype.Service;
 
 /**
  * PolicyHandler
- * - Kafka에서 발행되는 Event를 수신해 비즈니스 정책에 따라 반응
- * - Aggregate 상태 변화는 Aggregate 내부의 비즈니스 메서드로만 처리
- * - Pub/Sub 기반의 MSA 구조에서 핵심 연결 역할
+ * - Kafka로부터 발행되는 Event를 구독하고, 이에 따라 Aggregate의 상태 변화를 유도하는 역할
+ * - Pub/Sub 기반 MSA 구조에서 핵심적인 중재자 역할을 수행
+ * - 실제 상태 변화는 Aggregate 내부 메서드를 통해서만 가능
+ * - 관리자 Command를 대체하거나 보조하는 형태로 동작
  */
 @Service
 @Transactional
@@ -25,15 +26,15 @@ public class PolicyHandler {
     EBookRepository eBookRepository;
 
     /**
-     * 테스트용 전체 메시지 로깅 (필요 없으면 삭제 가능)
+     * 전체 메시지 로깅 (필요 시 제거 가능)
      */
     @StreamListener(KafkaProcessor.INPUT)
     public void whatever(@Payload String eventString) {}
 
     /**
      * [작가 등록 접수] 이벤트 수신
-     * - 등록된 작가 정보를 바탕으로 상태 변화 트리거
-     * - 신규 작가라면 생성, 기존 작가라면 무시 또는 로직 분기 가능
+     * - 신규 작가라면 DB에 등록
+     * - 기존 작가인 경우 무시 또는 별도 로직 가능
      */
     @StreamListener(
         value = KafkaProcessor.INPUT,
@@ -53,13 +54,13 @@ public class PolicyHandler {
                 return newAuthor;
             });
 
-        // 여기서는 자동 승인 제거하고, 단순 등록만 처리
         authorRepository.save(author);
     }
 
     /**
      * [콘텐츠 작성됨] 이벤트 수신
-     * - 관리자 시스템에서 콘텐츠 검열 또는 승인 처리 트리거 가능
+     * - 해당 전자책을 찾아 콘텐츠 승인 처리
+     * - 실제 로직에서는 검열 등의 과정 추가 가능
      */
     @StreamListener(
         value = KafkaProcessor.INPUT,
@@ -71,17 +72,14 @@ public class PolicyHandler {
         System.out.println("\n\n##### listener HandleContentRegistrationRequest : " + writtenContent + "\n\n");
 
         EBook ebook = eBookRepository.findById(writtenContent.getEbookId()).orElseThrow();
-        
-        // 콘텐츠 승인 처리 (실제 검열 로직 대신 단순 승인 예시)
         ebook.approveContent();
-        
         eBookRepository.save(ebook);
     }
 
     /**
      * [출간 요청] 이벤트 수신
-     * - 관리자가 실제로 출간 승인/거부를 결정하는 Command를 보내는 흐름을 기대
-     * - 이 Policy는 출간 요청 자체를 수신하고, 후속 로직 트리거 가능
+     * - 출간 요청 도달을 확인
+     * - 이후 관리자가 승인/거부를 직접 Command로 수행
      */
     @StreamListener(
         value = KafkaProcessor.INPUT,
@@ -92,50 +90,42 @@ public class PolicyHandler {
     ) {
         System.out.println("\n\n##### listener HandlePublishRequest : " + requestPublish + "\n\n");
 
-        // 출간 요청 수신 후 필요한 후속 처리
-        // 관리자 Command로 승인/거부를 결정하는 구조가 더 정석
+        // 출간 요청 수신 후 후속 처리 가능
     }
+
+    /**
+     * [전자책 비공개 요청] 이벤트 수신
+     * - 해당 전자책을 비공개 상태로 전환
+     */
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='ListOutEbookRequested'"
     )
-    
     public void wheneverListOutEbookRequested_HandleSwitch2Private(
-        @Payload ListOutEbookRequested listOutEbookRequested
+        @Payload ListOutEbookRequested event
     ) {
-        ListOutEbookRequested event = listOutEbookRequested;
-        System.out.println(
-            "\n\n##### listener HandleSwitch2Private : " +
-            listOutEbookRequested +
-            "\n\n"
-        );
+        System.out.println("##### listener HandleSwitch2Private : " + event);
 
-        // Sample Logic //
-
-        RequestSwitch2PrivateCommand command = new RequestSwitch2PrivateCommand();
-        EBook.requestSwitch2Private(command);
+        EBook ebook = eBookRepository.findById(event.getEbookId()).orElseThrow();
+        ebook.switchToPrivate();
+        eBookRepository.save(ebook);
     }
 
+    /**
+     * [출간 요청 취소] 이벤트 수신
+     * - 해당 전자책의 출간을 취소 처리
+     */
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='RequestPublishCanceled'"
     )
     public void wheneverRequestPublishCanceled_HandleRequestPublishCanceled(
-        @Payload RequestPublishCanceled requestPublishCanceled
+        @Payload RequestPublishCanceled event
     ) {
-        RequestPublishCanceled event = requestPublishCanceled;
-        System.out.println(
-            "\n\n##### listener HandleRequestPublishCanceled : " +
-            requestPublishCanceled +
-            "\n\n"
-        );
+        System.out.println("##### listener HandleRequestPublishCanceled : " + event);
 
-        // Comments //
-        //출간 요청 취소 접수
-
-        // Sample Logic //
-
-        PublishCancelCommand command = new PublishCancelCommand();
-        EBook.publishCancel(command);
+        EBook ebook = eBookRepository.findById(event.getEbookId()).orElseThrow();
+        ebook.cancelPublish();
+        eBookRepository.save(ebook);
     }
 }

@@ -6,5 +6,5 @@ public enum PublicationStatus {
     APPROVED,
     DENIED,
     PRIVATE,
-    DELETED,
+    CANCELED,
 }

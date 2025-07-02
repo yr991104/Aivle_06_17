@@ -17,6 +17,9 @@ public class Switch2Private extends AbstractEvent {
 
     public Switch2Private(EBook aggregate) {
         super(aggregate);
+        this.ebookId = aggregate.getEbookId();
+        this.authorId = aggregate.getAuthorId();
+        this.publicationStatus = aggregate.getPublicationStatus();
     }
 
     public Switch2Private() {

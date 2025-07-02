@@ -38,7 +38,11 @@ public class EBook {
         RequestContentApporved event = new RequestContentApporved(this);
         event.publishAfterCommit();
     }
-
+    public void denyContent() {
+        // 거부 처리 로직
+        RequestContentDenied event = new RequestContentDenied(this);
+        event.publishAfterCommit();
+    }
     /**
      * 출간 요청에 대한 승인 처리
      * 상태 변경 + 승인 이벤트 발행
@@ -66,6 +70,18 @@ public class EBook {
         RequestPublishDenied event = new RequestPublishDenied(this);
         event.publishAfterCommit();
     }
+    public void switchToPrivate() {
+        this.publicationStatus = PublicationStatus.PRIVATE;
+        Switch2Private event = new Switch2Private(this);
+        event.publishAfterCommit();
+    }
+
+    public void cancelPublish() {
+        this.publicationStatus = PublicationStatus.CANCELED;
+        PublishCanceled event = new PublishCanceled(this);
+        event.publishAfterCommit();
+    }
+
 
     /**
      * Repository 정적 접근 메서드
