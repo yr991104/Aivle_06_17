@@ -1,10 +1,14 @@
 package labcqrssummarize.infra;
 
-import javax.transaction.Transactional;
 import labcqrssummarize.domain.*;
+import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 //<<< Clean Arch / Inbound Adaptor
 // 관리자 시스템에서 전자책 관련 관리 기능을 제공하는 컨트롤러
 // - 출간 승인/거부

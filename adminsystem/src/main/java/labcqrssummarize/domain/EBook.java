@@ -1,11 +1,17 @@
 package labcqrssummarize.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Id;
-import javax.persistence.Enumerated;
-import javax.persistence.EnumType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Data;
+import java.time.LocalDate;
+import javax.persistence.*;
+import labcqrssummarize.AdminsystemApplication;
+import labcqrssummarize.domain.PublishCanceled;
+import labcqrssummarize.domain.RequestContentApporved;
+import labcqrssummarize.domain.RequestContentDenied;
+import labcqrssummarize.domain.RequestPublishApproved;
+import labcqrssummarize.domain.RequestPublishDenied;
+import labcqrssummarize.domain.Switch2Private;
 import labcqrssummarize.domain.PublicationStatus;
 import labcqrssummarize.AdminsystemApplication;
 
@@ -19,12 +25,19 @@ public class EBook {
     private String ebookId;
 
     private String title;
+
     private String authorId;
+
     private String content;
+
     private String coverImage;
+
     private String summary;
+
     private Integer price;
+
     private String category;
+
     private Integer countViews;
 
     @Enumerated(EnumType.STRING)
@@ -87,7 +100,10 @@ public class EBook {
      * Repository 정적 접근 메서드
      */
     public static EBookRepository repository() {
-        return AdminsystemApplication.applicationContext.getBean(EBookRepository.class);
+        EBookRepository eBookRepository = AdminsystemApplication.applicationContext.getBean(
+            EBookRepository.class
+        );
+        return eBookRepository;
     }
 }
 //>>> DDD / Aggregate Root

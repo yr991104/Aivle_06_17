@@ -1,13 +1,12 @@
-package labcqrs.domain;
+package labcqrssummarize.domain;
 
-import java.util.*;
-import labcqrs.domain.*;
-import labcqrs.infra.AbstractEvent;
-import lombok.*;
+import labcqrssummarize.domain.EBook;
+import labcqrssummarize.infra.AbstractEvent;
+import lombok.Data;
+import lombok.ToString;
 
 @Data
 @ToString
 public class ListOutEbookRequested extends AbstractEvent {
-
-    private String eBookId;
+    private Long id;
 }
