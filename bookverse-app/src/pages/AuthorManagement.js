@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const AuthorManagement = () => {
   return (
@@ -8,9 +9,9 @@ const AuthorManagement = () => {
       <aside className="w-64 bg-[#f0f2f5] p-6 border-r border-[#d0d7de]">
         <h2 className="text-xl font-bold mb-8">작가 시스템</h2>
         <nav className="flex flex-col gap-4">
-          <a href="#" className="text-[#111418] font-medium hover:underline">작가 등록 신청</a>
-          <a href="#" className="text-[#111418] font-medium hover:underline">전자책 작성</a>
-          <a href="#" className="text-[#111418] font-medium hover:underline">등록된 전자책 확인</a>
+          <Link to="/author" className="text-[#111418] font-medium hover:underline">작가 등록 신청</Link>
+          <Link to="/author/write" className="text-[#111418] font-medium hover:underline">전자책 작성</Link>
+          <Link to="/author/list" className="text-[#111418] font-medium hover:underline">등록된 전자책 확인</Link>
         </nav>
       </aside>
 
@@ -55,10 +56,6 @@ const AuthorManagement = () => {
                   <input placeholder="Enter your name" className="form-input bg-[#f0f2f5] h-14 rounded-lg p-4 placeholder-[#60758a]" />
                 </label>
                 <label className="flex flex-col flex-1 min-w-40">
-                  <p className="pb-2 text-base font-medium">소개</p>
-                  <textarea placeholder="Brief intro" className="form-input bg-[#f0f2f5] min-h-36 rounded-lg p-4 placeholder-[#60758a]" />
-                </label>
-                <label className="flex flex-col flex-1 min-w-40">
                   <p className="pb-2 text-base font-medium">유저 ID</p>
                   <input placeholder="Enter user ID" className="form-input bg-[#f0f2f5] h-14 rounded-lg p-4 placeholder-[#60758a]" />
                 </label>
@@ -66,10 +63,9 @@ const AuthorManagement = () => {
             </section>
 
             <section>
-              <h2 className="text-lg font-bold pb-2">출판 요청</h2>
+              <h2 className="text-lg font-bold pb-2">작가 등록 신청</h2>
               <div className="flex gap-3 pt-2">
-                <button className="h-10 px-4 rounded-lg bg-[#0c7ff2] text-white font-bold">제출</button>
-                <button className="h-10 px-4 rounded-lg bg-[#f0f2f5] text-[#111418] font-bold">취소</button>
+                <button className="h-10 px-4 rounded-lg bg-[#0c7ff2] text-white font-bold">신청</button>
               </div>
             </section>
 

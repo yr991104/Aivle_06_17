@@ -1,23 +1,37 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import AppBar from '../components/AppBar';
 import Footer from '../components/Footer';
 
 const LoginPage = () => {
   const navigate = useNavigate();
-
-  // 입력 필드 상태값 추가
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    if (userId && password) {
-      // 로그인 성공 시 이동 (예: 계정 페이지)
-      navigate('/account');
-    } else {
-      alert('아이디와 비밀번호를 입력해주세요.');
-    }
-  };
+  const handleLogin = async () => {
+  if (!userId || !password) {
+    alert('아이디와 비밀번호를 입력해주세요.');
+    return;
+  }
+
+  try {
+    const url = `${process.env.REACT_APP_API_SUBSCRIBER}/subscribers/login`;
+    console.log("API 요청 주소:", url);
+    
+    const response = await axios.post(`${process.env.REACT_APP_API_SUBSCRIBER}/subscribers/login`, {
+      userId,
+      password,
+    });
+
+    console.log(response.data);
+    alert('로그인 성공');
+    navigate('/');
+  } catch (error) {
+    console.error(error);
+    alert('로그인 실패');
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-white font-sans">
