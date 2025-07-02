@@ -95,4 +95,47 @@ public class PolicyHandler {
         // 출간 요청 수신 후 필요한 후속 처리
         // 관리자 Command로 승인/거부를 결정하는 구조가 더 정석
     }
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='ListOutEbookRequested'"
+    )
+    
+    public void wheneverListOutEbookRequested_HandleSwitch2Private(
+        @Payload ListOutEbookRequested listOutEbookRequested
+    ) {
+        ListOutEbookRequested event = listOutEbookRequested;
+        System.out.println(
+            "\n\n##### listener HandleSwitch2Private : " +
+            listOutEbookRequested +
+            "\n\n"
+        );
+
+        // Sample Logic //
+
+        RequestSwitch2PrivateCommand command = new RequestSwitch2PrivateCommand();
+        EBook.requestSwitch2Private(command);
+    }
+
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestPublishCanceled'"
+    )
+    public void wheneverRequestPublishCanceled_HandleRequestPublishCanceled(
+        @Payload RequestPublishCanceled requestPublishCanceled
+    ) {
+        RequestPublishCanceled event = requestPublishCanceled;
+        System.out.println(
+            "\n\n##### listener HandleRequestPublishCanceled : " +
+            requestPublishCanceled +
+            "\n\n"
+        );
+
+        // Comments //
+        //출간 요청 취소 접수
+
+        // Sample Logic //
+
+        PublishCancelCommand command = new PublishCancelCommand();
+        EBook.publishCancel(command);
+    }
 }

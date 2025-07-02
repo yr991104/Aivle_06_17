@@ -87,8 +87,8 @@ public class PolicyHandler {
 
         eBookPlatformRepository.save(ebook);
     }
-
-    // 전자책 비공개
+/*
+    // 전자책 비공개 -> adminsystem으로 이전
     @StreamListener(
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='ListOutEbookRequested'"
@@ -111,7 +111,7 @@ public class PolicyHandler {
 
         System.out.println("전자책이 비공개 처리되었습니다. ID: " + ebookId);
     }
-
+ */
     // 전자책 열람 요청 처리 (구독 상태 및 포인트 차감 처리)
     @StreamListener(
         value = KafkaProcessor.INPUT,

@@ -19,7 +19,7 @@ public class EBookController {
      * 출간 승인 API
      * @param id 출간 승인할 전자책 ID
      */
-    @PutMapping("/{id}/approve-publish")
+    @PatchMapping("/{id}/approve-publish")
     public void approvePublish(@PathVariable String id) {
         EBook ebook = eBookRepository.findById(id).orElseThrow();
         ebook.approvePublish();
@@ -30,7 +30,7 @@ public class EBookController {
      * 출간 거부 API
      * @param id 출간 거부할 전자책 ID
      */
-    @PutMapping("/{id}/deny-publish")
+    @PatchMapping("/{id}/deny-publish")
     public void denyPublish(@PathVariable String id) {
         EBook ebook = eBookRepository.findById(id).orElseThrow();
         ebook.denyPublish();
