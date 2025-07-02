@@ -1,5 +1,9 @@
 package labcqrssummarize.infra;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.naming.NameParser;
+import javax.naming.NameParser;
 import javax.transaction.Transactional;
 import labcqrssummarize.config.kafka.KafkaProcessor;
 import labcqrssummarize.domain.*;
@@ -7,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-
 /**
  * PolicyHandler
  * - Kafka로부터 발행되는 Event를 구독하고, 이에 따라 Aggregate의 상태 변화를 유도하는 역할
@@ -105,10 +108,6 @@ public class PolicyHandler {
         @Payload ListOutEbookRequested event
     ) {
         System.out.println("##### listener HandleSwitch2Private : " + event);
-
-        EBook ebook = eBookRepository.findById(event.getEbookId()).orElseThrow();
-        ebook.switchToPrivate();
-        eBookRepository.save(ebook);
     }
 
     /**
@@ -123,9 +122,5 @@ public class PolicyHandler {
         @Payload RequestPublishCanceled event
     ) {
         System.out.println("##### listener HandleRequestPublishCanceled : " + event);
-
-        EBook ebook = eBookRepository.findById(event.getEbookId()).orElseThrow();
-        ebook.cancelPublish();
-        eBookRepository.save(ebook);
     }
 }

@@ -1,9 +1,9 @@
-package labcqrs.domain;
+package labcqrssummarize.domain;
 
 import java.time.LocalDate;
 import java.util.*;
-import labcqrs.domain.*;
-import labcqrs.infra.AbstractEvent;
+import labcqrssummarize.domain.*;
+import labcqrssummarize.infra.AbstractEvent;
 import lombok.*;
 
 //<<< DDD / Domain Event
@@ -13,7 +13,7 @@ public class Switch2Private extends AbstractEvent {
 
     private String ebookId;
     private String authorId;
-    private publicationStatus publicationStatus;
+    private PublicationStatus publicationStatus;
 
     public Switch2Private(EBook aggregate) {
         super(aggregate);

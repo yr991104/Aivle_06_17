@@ -16,7 +16,7 @@ public class Author {
 
     private String name;
 
-    private Boolean isApproved; // 승인 여부
+    private Boolean isApproved;
 
     @ElementCollection
     private List<String> ebooks = new ArrayList<>(); // 해당 작가의 전자책 ID 목록
