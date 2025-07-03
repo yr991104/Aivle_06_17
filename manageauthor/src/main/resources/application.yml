@@ -31,12 +31,12 @@ spring:
         event-in:
           group: manageauthor
 #<<< EDA / Topic Name
-          destination: labcqrs
+          destination: labcqrssummarize
 #>>> EDA / Topic Name
           contentType: application/json
         event-out:
 #<<< EDA / Topic Name
-          destination: labcqrs
+          destination: labcqrssummarize
 #>>> EDA / Topic Name
           contentType: application/json
 
@@ -75,10 +75,10 @@ spring:
       bindings:
         event-in:
           group: manageauthor
-          destination: labcqrs
+          destination: labcqrssummarize
           contentType: application/json
         event-out:
-          destination: labcqrs
+          destination: labcqrssummarize
           contentType: application/json
 
 
