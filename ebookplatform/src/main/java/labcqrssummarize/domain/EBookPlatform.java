@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import labcqrssummarize.EbookplatformApplication;
 import lombok.Data;
 
@@ -75,6 +77,7 @@ public class EBookPlatform {
         System.out.println("<< 전자책 등록 완료됨 >>");
     }
 
+    @Transactional
     public boolean openEBook(RequestOpenEBookAccept event) {
         if (this.status != EbookStatus.OPEN) {
             HandleEBookViewFailed failEvent = new HandleEBookViewFailed(this);

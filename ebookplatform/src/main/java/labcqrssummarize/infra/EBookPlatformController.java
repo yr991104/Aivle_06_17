@@ -1,13 +1,19 @@
 package labcqrssummarize.infra;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 
 import labcqrssummarize.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class EBookPlatformController {
 
@@ -20,20 +26,26 @@ public class EBookPlatformController {
 
     // 전자책 등록 요청
     @PostMapping("/ebooks/register/{ebookId}")
-    public String register(@PathVariable Integer ebookId) {
+    public ResponseEntity<Map<String, Object>> register(@PathVariable Integer ebookId) {
+        System.out.println("📥 전자책 등록 요청 도착: " + ebookId);
         Optional<EBookPlatform> optionalEBook = eBookPlatformRepository.findById(ebookId);
 
+        Map<String, Object> body = new HashMap<>();
+
         if (optionalEBook.isEmpty()) {
-            return "등록 실패: 해당 전자책이 존재하지 않습니다.";
+            body.put("message", "등록 실패: 해당 전자책이 존재하지 않습니다.");
+            return ResponseEntity.status(404).body(body);
         }
 
-        EBookPlatform eBook = optionalEBook.get();
         try {
-            eBook.register();
-            eBookPlatformRepository.save(eBook);
-            return "전자책이 등록되었습니다.";
+            EBookPlatform ebook = optionalEBook.get();
+            ebook.register();
+            eBookPlatformRepository.save(ebook);
+            body.put("message", "전자책이 등록되었습니다.");
+            return ResponseEntity.ok(body);
         } catch (IllegalStateException e) {
-            return "등록 실패: " + e.getMessage();
+            body.put("message", "등록 실패: " + e.getMessage());
+            return ResponseEntity.status(400).body(body);
         }
     }
 
@@ -41,13 +53,13 @@ public class EBookPlatformController {
     @GetMapping("/ebooks/open/{ebookId}")
     public String open(@PathVariable Integer ebookId) {
         Optional<EBookPlatform> optionalEBook = eBookPlatformRepository.findById(ebookId);
-
+        
         if (optionalEBook.isEmpty()) {
             return "열람 실패: 해당 전자책이 존재하지 않습니다.";
         }
 
         EBookPlatform eBook = optionalEBook.get();
-
+        
         RequestOpenEBookAccept event = new RequestOpenEBookAccept();
         event.setUserId("test-user");  // 또는 로그인된 사용자 ID로 설정
         event.setSubscriberId("test-subscriber");  // 테스트용이거나 추후 real 값으로 설정
@@ -95,4 +107,8 @@ public class EBookPlatformController {
         return eBookPlatformRepository.save(ebook);
     }
     
+    @GetMapping("/ebooks/all")
+    public List<EBookPlatform> getAllEbooks() {
+        return (List<EBookPlatform>) eBookPlatformRepository.findAll();
+    }
 }
