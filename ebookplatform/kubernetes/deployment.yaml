@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: ebookplatform
-          image: "username/ebookplatform:latest"
+          image: "a0717.azurecr.io/ebookplatform:latest"
           ports:
             - containerPort: 8080
           readinessProbe:
