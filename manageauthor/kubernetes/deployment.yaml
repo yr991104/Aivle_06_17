@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: manageauthor
-          image: "username/manageauthor:latest"
+          image: "a0717.azurecr.io/manageauthor:latest"
           ports:
             - containerPort: 8080
           readinessProbe:
