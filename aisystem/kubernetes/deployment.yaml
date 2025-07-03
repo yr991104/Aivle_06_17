@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: aisystem
-          image: "username/aisystem:latest"
+          image: "a0717.azurecr.io/aisystem:latest"
           ports:
             - containerPort: 8080
           readinessProbe:
