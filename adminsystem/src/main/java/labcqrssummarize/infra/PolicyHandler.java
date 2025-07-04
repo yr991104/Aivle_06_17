@@ -124,47 +124,47 @@ public class PolicyHandler {
             eBookRepository.save(ebook);
         });
     }
-/* 지금 aisystem쪽 맛탱이가서 kafka 메시지 수신할때 전부 byte로 보냄
-    @StreamListener(
-    value = KafkaProcessor.INPUT,
-    condition = "headers['type']=='GeneratedEBookCover'"
-)
-public void wheneverGeneratedEBookCover(@Payload GeneratedEBookCover event) {
-    if (!event.validate()) return;
 
-    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='GeneratedEBookCover'"
+    )
+    public void wheneverGeneratedEBookCover(@Payload GeneratedEBookCover event) {
+        if (!event.validate()) return;
+
+        eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
         ebook.setCoverImage(event.getCoverImage());
         eBookRepository.save(ebook);
-    });
-}
+        });
+    }
 
-@StreamListener(
-    value = KafkaProcessor.INPUT,
-    condition = "headers['type']=='SummarizedContent'"
-)
-public void wheneverSummarizedContent(@Payload SummarizedContent event) {
-    if (!event.validate()) return;
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='SummarizedContent'"
+    )
+    public void wheneverSummarizedContent(@Payload SummarizedContent event) {
+        if (!event.validate()) return;
 
-    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+        eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
         ebook.setSummary(event.getSummary());
         eBookRepository.save(ebook);
-    });
-}
+        });
+    }
 
-@StreamListener(
-    value = KafkaProcessor.INPUT,
-    condition = "headers['type']=='EstimatedPriceAndCategory'"
-)
-public void wheneverEstimatedPriceAndCategory(@Payload EstimatedPriceAndCategory event) {
-    if (!event.validate()) return;
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='EstimatedPriceAndCategory'"
+    )
+    public void wheneverEstimatedPriceAndCategory(@Payload EstimatedPriceAndCategory event) {
+        if (!event.validate()) return;
 
-    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+        eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
         ebook.setPrice(event.getPrice());
         ebook.setCategory(event.getCategory());
         eBookRepository.save(ebook);
-    });
-}
-*/
+        });
+    }
+
     /**
      * [전자책 비공개 요청] 이벤트 수신
      * - 해당 전자책을 비공개 상태로 전환
