@@ -12,4 +12,5 @@ public class RegisteredAuthor extends AbstractEvent {
     private String authorId;
     private String name;
     private String userId;
+
 }

@@ -9,6 +9,7 @@ import lombok.*;
 @ToString
 public class WrittenContent extends AbstractEvent {
 
-    private String ebookId;
+    private String title;
     private String content;
+    private String authorId;
 }

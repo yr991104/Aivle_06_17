@@ -13,6 +13,8 @@ public class RequestPublishApproved extends AbstractEvent {
 
     private String ebookId;
     private String authorId;
+    private String title;
+    private String content;
     private PublicationStatus publicationStatus;
 
     public RequestPublishApproved(EBook aggregate) {

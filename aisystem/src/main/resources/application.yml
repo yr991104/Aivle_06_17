@@ -7,7 +7,7 @@ spring:
 
 openai:
   api:
-    key: ${OPENAI_API_KEY}
+    key: ${openai-api-key}
 
 ---
 

@@ -9,18 +9,21 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class RegisteredAuthor extends AbstractEvent {
+public class RequestAuthorApproved extends AbstractEvent {
 
     private String authorId;
-    private String name;
     private Boolean isApproved;
     private String userId;
 
-    public RegisteredAuthor(Author aggregate) {
+    public RequestAuthorApproved(Author aggregate) {
         super(aggregate);
+        this.authorId = aggregate.getAuthorId();
+        this.isApproved = aggregate.getIsApproved();
+        this.userId = aggregate.getUserId();
     }
 
-    public RegisteredAuthor() {
+
+    public RequestAuthorApproved() {
         super();
     }
 }

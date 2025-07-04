@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
+import java.util.UUID;
 /**
  * PolicyHandler
  * - Kafka로부터 발행되는 Event를 구독하고, 이에 따라 Aggregate의 상태 변화를 유도하는 역할
@@ -44,21 +45,27 @@ public class PolicyHandler {
         condition = "headers['type']=='RegisteredAuthor'"
     )
     public void wheneverRegisteredAuthor_HandleAuthorRegistrationRequest(
-        @Payload RegisteredAuthor registeredAuthor
+    @Payload RegisteredAuthor registeredAuthor
     ) {
         System.out.println("\n\n##### listener HandleAuthorRegistrationRequest : " + registeredAuthor + "\n\n");
 
-        Author author = authorRepository.findById(registeredAuthor.getAuthorId())
-            .orElseGet(() -> {
-                Author newAuthor = new Author();
-                newAuthor.setAuthorId(registeredAuthor.getAuthorId());
-                newAuthor.setName(registeredAuthor.getName());
-                newAuthor.setUserId(registeredAuthor.getUserId());
-                return newAuthor;
-            });
+        boolean exists = authorRepository.existsByNameAndUserId(registeredAuthor.getName(), registeredAuthor.getUserId());
+    
+        if (exists) {
+            System.out.println("이미 존재하는 작가입니다. 등록 무시.");
+            return;
+        }
+        Author author = new Author();
+        author.setName(registeredAuthor.getName());
+        author.setUserId(registeredAuthor.getUserId());
+        author.setIsApproved(false);
 
+        // 정책상 등록 신청만으로 자동 승인하는 경우:
+        author.approve();
+        
         authorRepository.save(author);
     }
+
 
     /**
      * [콘텐츠 작성됨] 이벤트 수신
@@ -74,11 +81,31 @@ public class PolicyHandler {
     ) {
         System.out.println("\n\n##### listener HandleContentRegistrationRequest : " + writtenContent + "\n\n");
 
-        EBook ebook = eBookRepository.findById(writtenContent.getEbookId()).orElseThrow();
-        ebook.approveContent();
-        eBookRepository.save(ebook);
-    }
+        EBook ebook = new EBook();
+        ebook.setEbookId(UUID.randomUUID().toString());
+        ebook.setAuthorId(writtenContent.getAuthorId());
+        ebook.setTitle(writtenContent.getTitle());
+        ebook.setContent(writtenContent.getContent());
+        ebook.setPublicationStatus(PublicationStatus.CONTINUED); // 일단 대기 상태로 생성
 
+        eBookRepository.save(ebook);
+
+        System.out.println("📚 신규 EBook 생성 완료 : " + ebook.getEbookId());
+    }
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestContentApproved'"
+    )
+    public void wheneverRequestContentApproved_UpdateEbooks(@Payload RequestContentApproved event) {
+        if (!event.validate()) return;
+
+        System.out.println("📚 eBook 등록 이벤트 수신 : " + event.toJson());
+
+        authorRepository.findByAuthorId(event.getAuthorId()).ifPresent(author -> {
+        author.getEbooks().add(event.getEbookId());
+        authorRepository.save(author);  
+        });
+    }
     /**
      * [출간 요청] 이벤트 수신
      * - 출간 요청 도달을 확인
@@ -88,14 +115,56 @@ public class PolicyHandler {
         value = KafkaProcessor.INPUT,
         condition = "headers['type']=='RequestPublish'"
     )
-    public void wheneverRequestPublish_HandlePublishRequest(
-        @Payload RequestPublish requestPublish
-    ) {
-        System.out.println("\n\n##### listener HandlePublishRequest : " + requestPublish + "\n\n");
+    public void wheneverRequestPublish_HandlePublishRequest(@Payload RequestPublish event) {
+        System.out.println("\n\n##### listener HandlePublishRequest : " + event + "\n\n");
 
-        // 출간 요청 수신 후 후속 처리 가능
+        eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+            // 출간 심사 로직 → 여기선 단순히 바로 승인 예시
+            ebook.approvePublish();  // 내부에서 상태 변경 + 이벤트 발행
+            eBookRepository.save(ebook);
+        });
     }
+/* 지금 aisystem쪽 맛탱이가서 kafka 메시지 수신할때 전부 byte로 보냄
+    @StreamListener(
+    value = KafkaProcessor.INPUT,
+    condition = "headers['type']=='GeneratedEBookCover'"
+)
+public void wheneverGeneratedEBookCover(@Payload GeneratedEBookCover event) {
+    if (!event.validate()) return;
 
+    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+        ebook.setCoverImage(event.getCoverImage());
+        eBookRepository.save(ebook);
+    });
+}
+
+@StreamListener(
+    value = KafkaProcessor.INPUT,
+    condition = "headers['type']=='SummarizedContent'"
+)
+public void wheneverSummarizedContent(@Payload SummarizedContent event) {
+    if (!event.validate()) return;
+
+    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+        ebook.setSummary(event.getSummary());
+        eBookRepository.save(ebook);
+    });
+}
+
+@StreamListener(
+    value = KafkaProcessor.INPUT,
+    condition = "headers['type']=='EstimatedPriceAndCategory'"
+)
+public void wheneverEstimatedPriceAndCategory(@Payload EstimatedPriceAndCategory event) {
+    if (!event.validate()) return;
+
+    eBookRepository.findById(event.getEbookId()).ifPresent(ebook -> {
+        ebook.setPrice(event.getPrice());
+        ebook.setCategory(event.getCategory());
+        eBookRepository.save(ebook);
+    });
+}
+*/
     /**
      * [전자책 비공개 요청] 이벤트 수신
      * - 해당 전자책을 비공개 상태로 전환

@@ -1,7 +1,5 @@
 package labcqrssummarize.infra;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.transaction.Transactional;
 import labcqrssummarize.config.kafka.KafkaProcessor;
 import labcqrssummarize.domain.*;
@@ -9,11 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.annotation.StreamListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Service;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Service
 @Transactional
@@ -25,83 +18,63 @@ public class PolicyHandler {
     @Autowired
     OpenAIService openAIService;
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverRequestPublishApproved_GenerateContentWithAi(@Payload String payload) {
-        System.out.println("\n##### [수신] Kafka 메시지 도착: " + payload + "\n");
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(payload);
+    @Autowired
+    PdfService pdfService;
 
-            if (jsonNode.has("type") && "RequestPublishApproved".equals(jsonNode.get("type").asText())) {
-                String ebookId = jsonNode.get("ebookId").asText();
-                System.out.println("✅ AI 처리 시작: ebookId=" + ebookId + "\n");
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestPublishApproved'"
+    )
+    @Transactional
+    public void wheneverRequestPublishApproved_Handle(@Payload RequestPublishApproved event) {
 
-                EBook ebook = eBookRepository.findById(ebookId).orElse(null);
-                if (ebook == null) {
-                    System.out.println("❌ EBook not found: " + ebookId);
-                    return;
-                }
+    if (event.getEbookId() == null) return;
 
-                // 1) 전자책 요약
-                System.out.println("▶️ 요약 생성 요청");
-                String summary = openAIService.summarizeText(ebook.getContent());
-                SummarizedContent summaryEvent = new SummarizedContent();
-                summaryEvent.setEbookId(ebookId);
-                summaryEvent.setTitle(ebook.getTitle());
-                summaryEvent.setContent(ebook.getContent());
-                summaryEvent.setSummary(summary);
-                summaryEvent.publishAfterCommit();
+    // DB에 없는 경우만 insert
+    if (!eBookRepository.findById(event.getEbookId()).isPresent()) {
+        EBook ebook = new EBook();
+        ebook.setEbookId(event.getEbookId());
+        ebook.setTitle(event.getTitle());
+        ebook.setContent(event.getContent());
+        ebook.setAuthorId(event.getAuthorId());
+        ebook.setPublicationStatus(event.getPublicationStatus());
+        eBookRepository.save(ebook);
 
-                // 2) 표지 이미지 생성
-                System.out.println("▶️ 표지 이미지 생성 요청");
-                String coverImageUrl = openAIService.generateCoverImage(ebook.getTitle());
-                ebook.setCoverImage(coverImageUrl);
-                new GeneratedEBookCover(ebook).publishAfterCommit();
+        System.out.println("✅ 신규 EBook DB 등록 완료: " + event.getEbookId());
+    }
 
-                // 3) PDF 저장
-                try {
-                    System.out.println("▶️ PDF 생성 시작");
-                    byte[] pdfBytes = openAIService.generateSummaryPdf(ebook.getTitle(), summary);
-                    Path pdfDir = Path.of("pdfs");
-                    if (!Files.exists(pdfDir)) Files.createDirectories(pdfDir);
-                    Path pdfPath = pdfDir.resolve(ebookId + ".pdf");
-                    try (FileOutputStream fos = new FileOutputStream(pdfPath.toFile())) {
-                        fos.write(pdfBytes);
-                    }
-                    System.out.println("✅ PDF 저장 완료: " + pdfPath.toAbsolutePath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+    // AI 처리
+    try {
+        System.out.println("✅ AI 처리 시작: ebookId=" + event.getEbookId());
 
-                // 4) 카테고리 및 가격 추정
-                System.out.println("▶️ 카테고리 및 가격 추정 시작");
-                String category = openAIService.estimateCategory(summary);
-                Integer price = openAIService.estimatePrice(summary);
+        EBook ebook = eBookRepository.findById(event.getEbookId()).orElse(null);
+        if (ebook == null) {
+            System.out.println("❌ EBook not found: " + event.getEbookId());
+            return;
+        }
 
-                EstimatiedPriceAndCategory priceAndCategoryEvent = new EstimatiedPriceAndCategory();
-                priceAndCategoryEvent.setEbookId(ebookId);
-                priceAndCategoryEvent.setSummary(summary);
-                priceAndCategoryEvent.setContent(ebook.getContent());
-                priceAndCategoryEvent.setCategory(category);
-                priceAndCategoryEvent.setPrice(price);
-                priceAndCategoryEvent.publishAfterCommit();
+        String summary = openAIService.summarizeText(ebook.getContent());
+        ebook.generateSummary(summary);
 
-                // 5) DB 최종 저장
-                ebook.setSummary(summary);
-                ebook.setCategory(category);
-                ebook.setPrice(price);
-                eBookRepository.save(ebook);
+        String coverImageUrl = openAIService.generateCoverImage(ebook.getTitle());
+        ebook.generateCoverImage(coverImageUrl);
 
-                System.out.println("✅ AI 처리 완료: " + ebookId + "\n");
+        String category = openAIService.estimateCategory(summary);
+        Integer price = openAIService.estimatePrice(summary);
+        ebook.estimatePriceAndCategory(category, price);
 
-                // ✅ Kafka 비동기 처리 대기 시간 확보
-                Thread.sleep(3000);
-            } else {
-                System.out.println("⚠️ 메시지 타입이 RequestPublishApproved가 아님. 무시됨.");
-            }
+        byte[] pdfBytes = pdfService.createPdfFromText(ebook.getTitle(), summary);
+        String pdfPath = "pdfs/" + ebook.getEbookId() + ".pdf";
+        pdfService.savePdfFile(pdfBytes, pdfPath);
+        ebook.setPdfPath(pdfPath);
+
+        eBookRepository.save(ebook);
+
+        System.out.println("✅ AI 처리 및 상태 반영 완료: " + event.getEbookId());
+
         } catch (Exception e) {
-            System.err.println("❗ Kafka 메시지 처리 실패");
             e.printStackTrace();
         }
     }
+
 }

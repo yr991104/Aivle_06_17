@@ -8,7 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.MimeTypeUtils;
 
@@ -29,13 +29,21 @@ public class AbstractEvent {
     }
 
     public void publish() {
-        KafkaProcessor processor = AisystemApplication.applicationContext.getBean(KafkaProcessor.class);
+        /**
+         * spring streams 방식
+         */
+        KafkaProcessor processor = AisystemApplication.applicationContext.getBean(
+            KafkaProcessor.class
+        );
         MessageChannel outputChannel = processor.outboundTopic();
 
         outputChannel.send(
             MessageBuilder
-                .withPayload(this.toJson())  // ✅ JSON 문자열로 변환해서 전송
-                .setHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+                .withPayload(this)
+                .setHeader(
+                    MessageHeaders.CONTENT_TYPE,
+                    MimeTypeUtils.APPLICATION_JSON
+                )
                 .setHeader("type", getEventType())
                 .build()
         );
@@ -43,9 +51,9 @@ public class AbstractEvent {
 
     public void publishAfterCommit() {
         TransactionSynchronizationManager.registerSynchronization(
-            new TransactionSynchronizationAdapter() {
+            new TransactionSynchronization() {
                 @Override
-                public void afterCompletion(int status) {
+                public void afterCommit() {
                     AbstractEvent.this.publish();
                 }
             }

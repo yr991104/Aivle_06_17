@@ -1,8 +1,5 @@
 package labcqrssummarize.domain;
 
-import java.time.LocalDate;
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
 import lombok.*;
 
@@ -11,10 +8,13 @@ import lombok.*;
 @ToString
 public class RequestPublish extends AbstractEvent {
 
-    private Long id;
+    private String authorId;
+    private String ebookId;
 
-    public RequestPublish(Author aggregate) {
+    public RequestPublish(Author aggregate, String ebookId) {
         super(aggregate);
+        this.authorId = aggregate.getAuthorId();
+        this.ebookId = ebookId;
     }
 
     public RequestPublish() {

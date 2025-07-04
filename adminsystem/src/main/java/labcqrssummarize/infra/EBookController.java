@@ -17,23 +17,33 @@ import org.springframework.web.bind.annotation.RestController;
 // - 전자책 비공개 처리 등 Aggregate 상태 변화를 직접 트리거
 // ※ 실제 비즈니스 로직은 Aggregate(EBook) 내부 메서드를 통해만 처리됨
 @RestController
-@RequestMapping("/ebooks")
+@RequestMapping("/requestEbooks")
 @Transactional
 public class EBookController {
 
     @Autowired
     private EBookRepository eBookRepository;
 
+    @GetMapping
+    public Iterable<EBook> getAllEBooks() {
+        return eBookRepository.findAll();
+    }
+
     /**
      * 콘텐츠 승인 API
      * - 해당 전자책의 콘텐츠를 승인 처리
      */
     @PatchMapping("/{id}/approve-content")
-    public void approveContent(@PathVariable String id) {
+    public void approveContent(
+        @PathVariable String id,
+        @RequestBody WrittenContent request
+    ) {
         EBook ebook = eBookRepository.findById(id).orElseThrow();
-        ebook.approveContent();
+        ebook.approveContent(request.getTitle(), request.getContent());
+        ebook.setPublicationStatus(PublicationStatus.PENDING); // 일단 대기 상태로 생성
         eBookRepository.save(ebook);
     }
+
 
     /**
      * 콘텐츠 거부 API

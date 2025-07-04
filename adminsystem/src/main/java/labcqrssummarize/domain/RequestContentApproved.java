@@ -6,7 +6,7 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class RequestContentApporved extends AbstractEvent {
+public class RequestContentApproved extends AbstractEvent {
 
     private String ebookId;
     private String title;
@@ -14,7 +14,7 @@ public class RequestContentApporved extends AbstractEvent {
     private PublicationStatus publicationStatus;
     private String authorId;
 
-    public RequestContentApporved(EBook aggregate) {
+    public RequestContentApproved(EBook aggregate) {
         super(aggregate);
         
         // 변경될 속성만 this로 명시적으로 세팅
@@ -25,7 +25,7 @@ public class RequestContentApporved extends AbstractEvent {
         this.publicationStatus = aggregate.getPublicationStatus();
     }
 
-    public RequestContentApporved() {
+    public RequestContentApproved() {
         super();
     }
 }

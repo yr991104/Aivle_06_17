@@ -1,5 +1,6 @@
 package labcqrssummarize.infra;
 
+
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -9,21 +10,20 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileOutputStream;
 
 @Service
 public class PdfService {
 
-    // 이모지 제거 함수 (모든 특수 이모지 문자 제거)
     private String removeEmojis(String text) {
         return text.replaceAll("[\\p{So}\\p{Cn}]+", "");
     }
-
+    
     public byte[] createPdfFromText(String title, String content) throws IOException {
         try (PDDocument document = new PDDocument()) {
             PDPage page = new PDPage();
             document.addPage(page);
 
-            // 나눔고딕 폰트 로드
             PDType0Font font = PDType0Font.load(document, new File("src/main/resources/fonts/NanumGothic.ttf"));
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page)) {
@@ -45,4 +45,13 @@ public class PdfService {
             return baos.toByteArray();
         }
     }
+
+    public void savePdfFile(byte[] pdfBytes, String filePath) throws IOException {
+        File pdfFile = new File(filePath);
+        pdfFile.getParentFile().mkdirs();
+        try (FileOutputStream fos = new FileOutputStream(pdfFile)) {
+            fos.write(pdfBytes);
+        }
+    }
 }
+

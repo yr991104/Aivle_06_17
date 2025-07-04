@@ -24,6 +24,11 @@ public class AuthorController {
 
     @Autowired
     AuthorRepository authorRepository;
+    
+    @GetMapping
+    public Iterable<Author> getAllAuthors() {
+        return authorRepository.findAll();
+    }
 
     /**
      * 작가 승인 API

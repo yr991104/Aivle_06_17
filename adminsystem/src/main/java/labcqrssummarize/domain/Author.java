@@ -4,6 +4,7 @@ import lombok.Data;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "Author_table")
@@ -19,6 +20,8 @@ public class Author {
     private Boolean isApproved;
 
     @ElementCollection
+    @CollectionTable(name = "author_ebooks", joinColumns = @JoinColumn(name = "author_id"))
+    @Column(name = "ebooks")
     private List<String> ebooks = new ArrayList<>(); // 해당 작가의 전자책 ID 목록
 
     private String userId; // 플랫폼 사용자 ID
@@ -32,7 +35,9 @@ public class Author {
             throw new IllegalStateException("이미 승인된 작가입니다.");
         }
         this.isApproved = true;
-
+        if (this.authorId == null) {
+        this.authorId = UUID.randomUUID().toString();  // 승인 시점에 authorId 생성
+        }
         RequestAuthorApproved event = new RequestAuthorApproved(this);
         event.publishAfterCommit();
     }

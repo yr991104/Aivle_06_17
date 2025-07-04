@@ -24,28 +24,41 @@ public class PolicyHandler {
     public void whatever(@Payload String eventString) {}
 
     // 1. 작가 등록됨 → 승인 상태 초기화
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverRegisteredAuthor(@Payload RegisteredAuthor event) {
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestAuthorApproved'"
+    )
+    public void wheneverRequestAuthorApproved(@Payload RequestAuthorApproved event) {
         if (!event.validate()) return;
 
-        System.out.println("📩 작가 등록됨: " + event.toJson());
+        System.out.println("✅ 작가 승인 완료됨: " + event.toJson());
 
-        Author author = authorRepository.findByAuthorId(event.getAuthorId())
-                .orElseThrow(() -> new RuntimeException("해당 작가를 찾을 수 없습니다"));
+        // 1. userId 기준으로 Author 찾기
+        Author author = authorRepository.findByUserId(event.getUserId())
+            .orElseThrow(() -> new RuntimeException("해당 유저의 작가를 찾을 수 없습니다."));
 
-        author.setIsApproved(false);
+        // 2. adminsystem에서 넘어온 authorId와 isApproved 상태 반영
+        author.setAuthorId(event.getAuthorId());
+        author.setIsApproved(event.getIsApproved());
+
         authorRepository.save(author);
     }
 
-    // 2. 콘텐츠 작성됨 → 관리자 시스템에 전달할 메시지 구성 필요 시 여기에 구현
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverWrittenContent(@Payload WrittenContent event) {
+    @StreamListener(
+        value = KafkaProcessor.INPUT,
+        condition = "headers['type']=='RequestContentApproved'"
+    )
+    public void wheneverRequestContentApproved_UpdateEbooks(@Payload RequestContentApproved event) {
         if (!event.validate()) return;
-        System.out.println("📝 콘텐츠 작성됨: " + event.toJson());
 
-        // 관리자 시스템으로 이벤트 전달 (선택 사항)
-        // 이 컨텍스트에서는 별도 처리 없음
+        System.out.println("📚 eBook 등록 이벤트 수신 : " + event.toJson());
+
+        authorRepository.findByAuthorId(event.getAuthorId()).ifPresent(author -> {
+            author.getEbooks().add(event.getEbookId());
+            authorRepository.save(author);
+        });
     }
+
 
     // 3. 출간 요청됨
     @StreamListener(KafkaProcessor.INPUT)

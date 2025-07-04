@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface AuthorRepository
     extends PagingAndSortingRepository<Author, Long> {
     Optional<Author> findByAuthorId(String authorId);
+    Optional<Author> findByUserId(String userId);
 }

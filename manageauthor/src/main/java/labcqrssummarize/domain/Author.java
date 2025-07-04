@@ -15,6 +15,7 @@ import labcqrssummarize.domain.RequestPublishCanceled;
 import labcqrssummarize.domain.WrittenContent;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "Author_table")
@@ -31,6 +32,11 @@ public class Author {
     private Boolean isApproved;  // 관리자 승인 여부
     private String userId;       // 작가 유저 ID
 
+    @ElementCollection
+    @CollectionTable(name = "author_ebooks", joinColumns = @JoinColumn(name = "author_id"))
+    @Column(name = "ebooks")
+    private List<String> ebooks = new ArrayList<>();
+
     // 작가 등록 이벤트 자동 발행
     @PostPersist
     public void onPostPersist() {
@@ -39,17 +45,22 @@ public class Author {
     }
 
     // 수동 이벤트 발행 메서드들 (이벤트만 발행하고 DB 저장은 안 함)
-    public void writeContent(String title, String content) {
+    public void writeContent(String title, String content, String authorId) {
         WrittenContent event = new WrittenContent(this);
+        event.setAuthorId(authorId);
         event.setTitle(title);
         event.setContent(content);
         event.publishAfterCommit();
     }
 
-    public void requestPublish() {
-        RequestPublish event = new RequestPublish(this);
+    public void requestPublish(String ebookId) {
+        if (!this.ebooks.contains(ebookId)) {
+            throw new IllegalArgumentException("작가가 소유하지 않은 eBook입니다.");
+        }
+        RequestPublish event = new RequestPublish(this, ebookId);
         event.publishAfterCommit();
     }
+
 
     public void cancelPublish() {
         RequestPublishCanceled event = new RequestPublishCanceled(this);

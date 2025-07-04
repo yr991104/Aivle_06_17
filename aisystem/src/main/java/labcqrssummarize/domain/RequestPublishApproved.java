@@ -10,11 +10,20 @@ public class RequestPublishApproved extends AbstractEvent {
 
     private String ebookId;
     private String authorId;
-    private Object publicationStatus;
+    private String title;
+    private String content;
+    private PublicationStatus publicationStatus;
 
-    @Override
-    public void publish() {
-        System.out.println("🔥 Kafka 이벤트 발행 직전: " + this.getEventType() + " => " + this.toJson());
-        super.publish();
+    public RequestPublishApproved(EBook aggregate) {
+        super(aggregate);
+        this.ebookId = aggregate.getEbookId();
+        this.authorId = aggregate.getAuthorId();
+        this.title = aggregate.getTitle();
+        this.content = aggregate.getContent();
+        this.publicationStatus = aggregate.getPublicationStatus();
+    }
+
+    public RequestPublishApproved() {
+        super();
     }
 }

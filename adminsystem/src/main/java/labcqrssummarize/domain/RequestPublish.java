@@ -1,13 +1,23 @@
 package labcqrssummarize.domain;
 
-import java.util.*;
-import labcqrssummarize.domain.*;
 import labcqrssummarize.infra.AbstractEvent;
-import lombok.*;
-//이전 도메인 EVENT
+import lombok.Data;
+import lombok.ToString;
+
 @Data
 @ToString
 public class RequestPublish extends AbstractEvent {
 
-    private Long id;
+    private String ebookId;
+    private String authorId;
+
+    public RequestPublish(EBook ebook) {
+        super(ebook);
+        this.ebookId = ebook.getEbookId();
+        this.authorId = ebook.getAuthorId();
+    }
+
+    public RequestPublish() {
+        super();
+    }
 }

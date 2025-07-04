@@ -9,19 +9,18 @@ import lombok.*;
 //<<< DDD / Domain Event
 @Data
 @ToString
-public class EstimatiedPriceAndCategory extends AbstractEvent {
+public class SummarizedContent extends AbstractEvent {
 
     private String ebookId;
-    private String summary;
+    private String title;
     private String content;
-    private Integer price;
-    private String category;
+    private String summary;
 
-    public EstimatiedPriceAndCategory(EBook aggregate) {
+    public SummarizedContent(EBook aggregate) {
         super(aggregate);
     }
 
-    public EstimatiedPriceAndCategory() {
+    public SummarizedContent() {
         super();
     }
 }
